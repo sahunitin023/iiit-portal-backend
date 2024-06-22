@@ -1,0 +1,4 @@
+.env
+.venv/
+activate_venv.ps1
+run_server_with_migrate.ps1
