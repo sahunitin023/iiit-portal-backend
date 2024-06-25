@@ -1,17 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
-degree_choices = (
-    ("Bachelor of Technology", "Bachelor of Technology"),
-    ("Master of Technology", "Master of Technology"),
-    ("Doctor of Philosophy", "Doctor of Philosophy"),
-)
-
-degree_in_short = {
-    "Bachelor of Technology": "B. Tech",
-    "Master of Technology": "M. Tech",
-    "Doctor of Philosophy": "PHD",
-}
+from .constants import degree_choices, degree_in_short
 
 
 # Create your models here.
@@ -61,12 +50,23 @@ class Program(models.Model):
     def __str__(self):
         return f"{degree_in_short[self.degree]} in {self.branch}"
 
+
 class Course(models.Model):
     id = models.CharField(primary_key=True, max_length=10)
     dept = models.ForeignKey(Dept, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     shortname = models.CharField(max_length=10)
     credits = models.IntegerField()
-    
+
     def __str__(self):
         return self.name
+
+
+class Class(models.Model):
+    id = models.CharField(primary_key=True, max_length=5)
+    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    batch = models.CharField(help_text="E.g 2021-25")
+
+
+    class Meta:
+        verbose_name_plural = "Classes"
