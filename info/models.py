@@ -1,5 +1,3 @@
-from email.policy import default
-from random import choices
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -33,7 +31,7 @@ class User(AbstractUser):
 
 class Dept(models.Model):
     id = models.CharField(primary_key="True", max_length=10)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=100)
 
     class Meta:
         verbose_name = "Department"
@@ -45,7 +43,7 @@ class Dept(models.Model):
 
 class Branch(models.Model):
     id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=100)
     dept = models.ForeignKey(Dept, on_delete=models.CASCADE)
 
     class Meta:
@@ -62,3 +60,13 @@ class Program(models.Model):
 
     def __str__(self):
         return f"{degree_in_short[self.degree]} in {self.branch}"
+
+class Course(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    dept = models.ForeignKey(Dept, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    shortname = models.CharField(max_length=10)
+    credits = models.IntegerField()
+    
+    def __str__(self):
+        return self.name
