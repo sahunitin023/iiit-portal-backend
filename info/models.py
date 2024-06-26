@@ -33,6 +33,7 @@ class Dept(models.Model):
 class Branch(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    short_name = models.CharField(max_length=10)
     dept = models.ForeignKey(Dept, on_delete=models.CASCADE)
 
     class Meta:
@@ -71,7 +72,7 @@ class Class(models.Model):
         verbose_name_plural = "Classes"
     
     def __str__(self):
-        return self.id
+        return f"{self.program.branch.short_name} {self.batch}"
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
@@ -85,3 +86,14 @@ class Student(models.Model):
     
     def __str__(self):
         return self.student_id
+    
+class Teacher(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    teacher_id = models.CharField(primary_key=True, max_length=100)
+    dept = models.ForeignKey(Dept, on_delete=models.CASCADE, default=1)
+    name = models.CharField(max_length=100)
+    sex = models.CharField(max_length=50, choices=sex_choice, default="Male")
+    DOB = models.DateField(default="1980-01-01")
+
+    def __str__(self):
+        return self.name

@@ -1,18 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Branch, Class, Dept, Program, Student, User, Course
+from .models import Branch, Class, Dept, Program, Student, Teacher, User, Course
 from .constants import degree_in_short
 
 # Register your models here.
 
 
-# Admin Inlines
+# ---------------------------Admin Inlines---------------------------
 class ClassInLine(admin.TabularInline):
     model = Class
     extra = 0
 
 
-# Admin Panels
+# ---------------------------Admin Panels---------------------------
 class DeptAdmin(admin.ModelAdmin):
     list_display = ["name", "id"]
     search_fields = ["name", "id"]
@@ -20,8 +20,8 @@ class DeptAdmin(admin.ModelAdmin):
 
 
 class BranchAdmin(admin.ModelAdmin):
-    list_display = ["name", "id", "dept"]
-    search_fields = ["name", "dept"]
+    list_display = ["name", "dept"]
+    search_fields = ["name", "dept", "short_name"]
     ordering = ["id"]
 
 
@@ -54,6 +54,11 @@ class StudentAdmin(admin.ModelAdmin):
     search_fields=["student_id", "name", "class_id"]
     raw_id_fields=["class_id"]
 
+
+class TeacherAdmin(admin.ModelAdmin):
+    list_display=["teacher_id", "name", "dept",]
+    search_fields=["teacher_id", "name", ]
+
 #Register of Admin Site
 admin.site.register(User, UserAdmin)
 admin.site.register(Dept, DeptAdmin)
@@ -62,3 +67,4 @@ admin.site.register(Program, ProgramAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Student, StudentAdmin)
+admin.site.register(Teacher, TeacherAdmin)
