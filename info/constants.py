@@ -10,3 +10,8 @@ degree_in_short = {
     "Master of Technology": "M. Tech",
     "Doctor of Philosophy": "PHD",
 }
+
+sex_choice = (
+    ("Male", "Male"),
+    ("Female", "Female")
+)

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from .constants import degree_choices, degree_in_short
+from .constants import degree_choices, degree_in_short, sex_choice
 
 
 # Create your models here.
@@ -67,6 +67,21 @@ class Class(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     batch = models.CharField(help_text="E.g 2021-25")
 
-
     class Meta:
         verbose_name_plural = "Classes"
+    
+    def __str__(self):
+        return self.id
+
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    student_id = models.CharField(primary_key=True, max_length=15)
+    class_id = models.ForeignKey(Class, on_delete=models.CASCADE, db_column='class', verbose_name='Class')
+    name = models.CharField(max_length=200)
+    sex = models.CharField(max_length=50, choices=sex_choice, default="Male")
+    DOB = models.DateField(default="2000-01-01")
+    phone_number = models.CharField(max_length=13, help_text="Include Country Code (+91)", unique=True, blank=True)
+    email = models.EmailField(null=True)
+    
+    def __str__(self):
+        return self.student_id
