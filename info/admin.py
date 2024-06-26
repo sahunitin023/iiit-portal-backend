@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Branch, Class, Dept, Program, Student, Teacher, User, Course
+
+from .mixins import ReadOnlyInLine
+from .models import Assign, Branch, Class, Dept, Program, Student, Teacher, User, Course
 from .constants import degree_in_short
 
 # Register your models here.
@@ -9,6 +11,11 @@ from .constants import degree_in_short
 # ---------------------------Admin Inlines---------------------------
 class ClassInLine(admin.TabularInline):
     model = Class
+    extra = 0
+
+
+class StudentInline(ReadOnlyInLine, admin.TabularInline):
+    model = Student
     extra = 0
 
 
@@ -38,6 +45,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class ClassAdmin(admin.ModelAdmin):
+    inlines = [StudentInline]
     list_display = ("id", "branch", "batch", "degree")
     search_fields = ("program__degree", "program__branch__name", "batch")
     ordering = ["batch"]
@@ -50,16 +58,29 @@ class ClassAdmin(admin.ModelAdmin):
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display=["student_id", "name", "class_id", "phone_number"]
-    search_fields=["student_id", "name", "class_id"]
-    raw_id_fields=["class_id"]
+    list_display = ["id", "name", "class_id", "phone_number"]
+    search_fields = ["id", "name", "class_id"]
+    raw_id_fields = ["class_id"]
 
 
 class TeacherAdmin(admin.ModelAdmin):
-    list_display=["teacher_id", "name", "dept",]
-    search_fields=["teacher_id", "name", ]
+    list_display = [
+        "id",
+        "name",
+        "dept",
+    ]
+    search_fields = [
+        "id",
+        "name",
+    ]
 
-#Register of Admin Site
+
+class AssignAdmin(admin.ModelAdmin):
+    list_display = ["course", "class_id", "teacher"]
+    search_fields = ["course", "class_id", "teacher"]
+
+
+# Register of Admin Site
 admin.site.register(User, UserAdmin)
 admin.site.register(Dept, DeptAdmin)
 admin.site.register(Branch, BranchAdmin)
@@ -68,3 +89,4 @@ admin.site.register(Course, CourseAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Teacher, TeacherAdmin)
+admin.site.register(Assign, AssignAdmin)
