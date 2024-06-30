@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('info', '0017_teacher'),
+        ('info', '0017_faculty'),
     ]
 
     operations = [
@@ -17,10 +17,10 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('class_id', models.ForeignKey(db_column='class', on_delete=django.db.models.deletion.CASCADE, to='info.class', verbose_name='Class')),
                 ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='info.course')),
-                ('teacher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='info.teacher')),
+                ('faculty', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='info.faculty')),
             ],
             options={
-                'unique_together': {('course', 'class_id', 'teacher')},
+                'unique_together': {('course', 'class_id', 'faculty')},
             },
         ),
     ]

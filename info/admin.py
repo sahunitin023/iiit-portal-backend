@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .mixins import ReadOnlyInLine
-from .models import Assign, AssignTime, Branch, Class, Dept, Program, Student, Teacher, User, Course
+from .models import *
 from .constants import degree_in_short
 
 # Register your models here.
@@ -22,6 +22,13 @@ class AssignTimeInline(admin.TabularInline):
     model = AssignTime
     extra = 0
 
+
+class AttendanceInline(admin.TabularInline):
+    # can_delete = False
+    readonly_fields=['course', 'date']
+    raw_id_fields=['student']
+    model=Attendance
+    extra=0
 
 # ---------------------------Admin Panels---------------------------
 class DeptAdmin(admin.ModelAdmin):
@@ -62,6 +69,7 @@ class ClassAdmin(admin.ModelAdmin):
 
 
 class StudentAdmin(admin.ModelAdmin):
+    exclude=['id']
     list_display = ["id", "name", "class_id", "phone_number"]
     search_fields = ["id", "name", "class_id"]
     raw_id_fields = ["class_id"]
@@ -81,9 +89,21 @@ class TeacherAdmin(admin.ModelAdmin):
 
 class AssignAdmin(admin.ModelAdmin):
     inlines=[AssignTimeInline]
-    list_display = ["course", "class_id", "teacher"]
-    search_fields = ["course", "class_id", "teacher"]
+    list_display = ["course", "class_id", "faculty"]
+    search_fields = ["course", "class_id", "faculty"]
+    
+class AttendanceClassAdmin(admin.ModelAdmin):
+    inlines=[AttendanceInline]
+    list_display = ('assign', 'date', 'status')
+    ordering = ['assign', 'date']
 
+# class AttendanceAdmin(admin.ModelAdmin):
+    # exclude =['course', 'date']
+    
+    # def get_exclude(self, request, obj=None):
+    #     if request.method == 'GET':
+    #         return self.exclude
+        
 
 # Register of Admin Site
 admin.site.register(User, UserAdmin)
@@ -93,5 +113,7 @@ admin.site.register(Program, ProgramAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(Teacher, TeacherAdmin)
+admin.site.register(Faculty, TeacherAdmin)
 admin.site.register(Assign, AssignAdmin)
+admin.site.register(AttendanceClass, AttendanceClassAdmin)
+# admin.site.register(Attendance)

@@ -30,3 +30,9 @@ DAYS_OF_WEEK = (
     ("Friday", "Friday"),
     ("Saturday", "Saturday"),
 )
+
+ATTENDANCE_STATUS_CHOICES = (
+    (0, 'Attendance not Marked'),
+    (1, 'Attendance Marked'),
+    (2, 'Class cancelled'),
+)
