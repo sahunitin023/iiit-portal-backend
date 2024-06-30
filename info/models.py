@@ -150,6 +150,24 @@ class AssignTime(models.Model):
     )
     day = models.CharField(max_length=15, choices=DAYS_OF_WEEK)
 
+    def clean(self):
+        super().clean()
+        is_occupied = (
+            AssignTime.objects.filter(
+                assign__teacher=self.assign.teacher, day=self.day, period=self.period
+            )
+            .exclude(id=self.id)
+            .exists()
+        )
+        if is_occupied:
+            raise ValidationError(
+                f"The teacher {self.assign.teacher} is already assigned to another class on {self.day} during {self.period}."
+            )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(AssignTime, self).save(*args, **kwargs)
+        
 
 # Class Attendance
 class AttendanceClass(models.Model):
