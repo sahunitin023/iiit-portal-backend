@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .mixins import ReadOnlyInLine
-from .models import Assign, Branch, Class, Dept, Program, Student, Teacher, User, Course
+from .models import Assign, AssignTime, Branch, Class, Dept, Program, Student, Teacher, User, Course
 from .constants import degree_in_short
 
 # Register your models here.
@@ -16,6 +16,10 @@ class ClassInLine(admin.TabularInline):
 
 class StudentInline(ReadOnlyInLine, admin.TabularInline):
     model = Student
+    extra = 0
+
+class AssignTimeInline(admin.TabularInline):
+    model = AssignTime
     extra = 0
 
 
@@ -76,6 +80,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
 
 class AssignAdmin(admin.ModelAdmin):
+    inlines=[AssignTimeInline]
     list_display = ["course", "class_id", "teacher"]
     search_fields = ["course", "class_id", "teacher"]
 

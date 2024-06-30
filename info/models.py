@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from .constants import degree_choices, degree_in_short, sex_choice
+from .constants import degree_choices, degree_in_short, sex_choice, time_slots, DAYS_OF_WEEK
 
 
 # Create your models here.
@@ -119,3 +119,12 @@ class Assign(models.Model):
         cr = Course.objects.get(id=self.course_id)
         te = Teacher.objects.get(id=self.teacher_id)
         return "%s : %s : %s" % (te.name, cr.shortname, cl)
+
+
+# useful for getting timetable for teachers
+class AssignTime(models.Model):
+    assign = models.ForeignKey(Assign, on_delete=models.CASCADE)
+    period = models.CharField(
+        max_length=50, choices=time_slots, default="11:00 - 11:00"
+    )
+    day = models.CharField(max_length=15, choices=DAYS_OF_WEEK)
