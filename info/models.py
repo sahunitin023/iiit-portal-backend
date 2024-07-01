@@ -25,9 +25,6 @@ class User(AbstractUser):
             return True
         return False
 
-    def save(self, *args, **kwargs):
-        self.username = self.username.upper()
-        return super(User, self).save(*args, **kwargs)
 
 
 class Dept(models.Model):
@@ -105,7 +102,7 @@ class Student(models.Model):
         return self.id
 
     def save(self, *args, **kwargs):
-        self.id = self.user.username
+        self.id = self.user.username.upper()
         return super(Student, self).save(*args, **kwargs)
 
 
