@@ -36,3 +36,17 @@ ATTENDANCE_STATUS_CHOICES = (
     (1, 'Attendance Marked'),
     (2, 'Class cancelled'),
 )
+
+test_name = (
+    ("Quiz", "Quiz"),
+    ("Teacher Assessment", "Teacher Assessment"),
+    ("Mid Semester Exam", "Mid Semester Exam"),
+    ("End Semester Exam", "End Semester Exam"),
+)
+
+test_total_mark = {
+    "Quiz":15,
+    "Teacher Assessment":5,
+    "Mid Semester Exam":30,
+    "End Semester Exam":50,
+}

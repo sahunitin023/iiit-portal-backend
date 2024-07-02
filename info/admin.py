@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.http.request import HttpRequest
 
 from .mixins import ReadOnlyInLine
 from .models import *
@@ -14,9 +15,10 @@ class ClassInLine(admin.TabularInline):
     extra = 0
 
 
-class StudentInline(ReadOnlyInLine, admin.TabularInline):
+class StudentInline(admin.TabularInline):
     model = Student
     extra = 0
+
 
 class AssignTimeInline(admin.TabularInline):
     model = AssignTime
@@ -43,13 +45,6 @@ class BranchAdmin(admin.ModelAdmin):
     ordering = ["id"]
 
 
-class ProgramAdmin(admin.ModelAdmin):
-    # list_display = ["name"]
-    inlines = [ClassInLine]
-    search_fields = ["branch", "degree"]
-    ordering = ["id"]
-
-
 class CourseAdmin(admin.ModelAdmin):
     list_display = ["id", "name", "dept"]
     search_fields = ["id", "name", "dept"]
@@ -57,15 +52,13 @@ class CourseAdmin(admin.ModelAdmin):
 
 class ClassAdmin(admin.ModelAdmin):
     inlines = [StudentInline]
-    list_display = ("id", "branch", "batch", "degree")
-    search_fields = ("program__degree", "program__branch__name", "batch")
+    list_display = ("id", "branch", "batch", "degree", "sem")
+    search_fields = ("degree", "branch__name", "batch")
     ordering = ["batch"]
 
     def degree(self, obj):
-        return degree_in_short[obj.program.degree]
+        return degree_in_short[obj.degree]
 
-    def branch(self, obj):
-        return obj.program.branch.name
 
 
 class StudentAdmin(admin.ModelAdmin):
@@ -75,7 +68,7 @@ class StudentAdmin(admin.ModelAdmin):
     raw_id_fields = ["class_id"]
 
 
-class TeacherAdmin(admin.ModelAdmin):
+class FacultyAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "name",
@@ -109,11 +102,12 @@ class AttendanceClassAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(Dept, DeptAdmin)
 admin.site.register(Branch, BranchAdmin)
-admin.site.register(Program, ProgramAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Class, ClassAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(Faculty, TeacherAdmin)
+admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(Assign, AssignAdmin)
 admin.site.register(AttendanceClass, AttendanceClassAdmin)
+# admin.site.register(Marks)
+
 # admin.site.register(Attendance)

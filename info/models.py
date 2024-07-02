@@ -1,6 +1,10 @@
+from email.policy import default
+from tabnanny import verbose
+from wsgiref.validate import validator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from .constants import (
     ATTENDANCE_STATUS_CHOICES,
     degree_choices,
@@ -8,6 +12,8 @@ from .constants import (
     sex_choice,
     time_slots,
     DAYS_OF_WEEK,
+    test_name,
+    test_total_mark,
 )
 
 
@@ -26,7 +32,6 @@ class User(AbstractUser):
         return False
 
 
-
 class Dept(models.Model):
     id = models.CharField(primary_key="True", max_length=10)
     name = models.CharField(max_length=100)
@@ -34,6 +39,17 @@ class Dept(models.Model):
     class Meta:
         verbose_name = "Department"
         verbose_name_plural = "Departments"
+
+    def __str__(self):
+        return self.name
+
+
+class Course(models.Model):
+    id = models.CharField(primary_key=True, max_length=10)
+    dept = models.ForeignKey(Dept, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    shortname = models.CharField(max_length=10)
+    credits = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -52,40 +68,24 @@ class Branch(models.Model):
         return self.name
 
 
-class Program(models.Model):
-    id = models.CharField(primary_key=True, max_length=10)
-    degree = models.CharField(choices=degree_choices)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{degree_in_short[self.degree]} in {self.branch}"
-
-
-class Course(models.Model):
-    id = models.CharField(primary_key=True, max_length=10)
-    dept = models.ForeignKey(Dept, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    shortname = models.CharField(max_length=10)
-    credits = models.IntegerField()
-
-    def __str__(self):
-        return self.name
-
-
 class Class(models.Model):
     id = models.CharField(primary_key=True, max_length=5)
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    degree = models.CharField(choices=degree_choices)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     batch = models.CharField(help_text="E.g 2021-25")
+    sem = models.IntegerField(
+        default=1, validators=[MinValueValidator(1), MaxValueValidator(8)]
+    )
 
     class Meta:
         verbose_name_plural = "Classes"
 
     def __str__(self):
-        return f"{self.program.branch.short_name} {self.batch}"
+        return f"{self.branch} {self.batch}"
 
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.CharField(primary_key=True, max_length=15)
     class_id = models.ForeignKey(
         Class, on_delete=models.CASCADE, db_column="class", verbose_name="Class"
@@ -94,7 +94,7 @@ class Student(models.Model):
     sex = models.CharField(max_length=50, choices=sex_choice, default="Male")
     DOB = models.DateField(default="2000-01-01")
     phone_number = models.CharField(
-        max_length=13, help_text="Include Country Code (+91)", unique=True, blank=True
+        max_length=13, help_text="Include Country Code (+91)", unique=True
     )
     email = models.EmailField(null=True)
 
@@ -120,6 +120,10 @@ class Faculty(models.Model):
     class Meta:
         verbose_name_plural = "Faculties"
 
+    def save(self, *args, **kwargs):
+        self.id = self.user.username.upper()
+        return super(Student, self).save(*args, **kwargs)
+
 
 # Assigning to faculties with course and class(Branches)
 class Assign(models.Model):
@@ -133,10 +137,7 @@ class Assign(models.Model):
         unique_together = (("course", "class_id", "faculty"),)
 
     def __str__(self):
-        cl = Class.objects.get(id=self.class_id_id)
-        cr = Course.objects.get(id=self.course_id)
-        te = Faculty.objects.get(id=self.faculty_id)
-        return "%s : %s : %s" % (te.name, cr.shortname, cl)
+        return f"{self.faculty_id} : {self.course_id} : {self.class_id_id}"
 
 
 # useful for getting timetable for faculties
@@ -151,20 +152,20 @@ class AssignTime(models.Model):
         super().clean()
         is_occupied = (
             AssignTime.objects.filter(
-                assign__teacher=self.assign.teacher, day=self.day, period=self.period
+                assign__faculty=self.assign.faculty, day=self.day, period=self.period
             )
             .exclude(id=self.id)
             .exists()
         )
         if is_occupied:
             raise ValidationError(
-                f"The teacher {self.assign.teacher} is already assigned to another class on {self.day} during {self.period}."
+                f"The faculty {self.assign.faculty} is already assigned to another class on {self.day} during {self.period}."
             )
 
     def save(self, *args, **kwargs):
         self.clean()
         super(AssignTime, self).save(*args, **kwargs)
-        
+
 
 # Class Attendance
 class AttendanceClass(models.Model):
@@ -217,9 +218,51 @@ class AttendanceTotal(models.Model):
 
     @property
     def classes_to_attend(self):
-        total_class = Attendance.objects.filter(course=self.course, student=self.student).count()
-        att_class = Attendance.objects.filter(course=self.course, student=self.student, status=True).count()
+        total_class = Attendance.objects.filter(
+            course=self.course, student=self.student
+        ).count()
+        att_class = Attendance.objects.filter(
+            course=self.course, student=self.student, status=True
+        ).count()
         cta = 3 * total_class - 4 * att_class
         if cta < 0:
             return 0
         return cta
+
+
+class MarkClass(models.Model):
+    assign = models.ForeignKey(Assign, on_delete=models.CASCADE)
+    test_name = models.CharField(max_length=50, choices=test_name)
+    status = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.assign.class_id} : {self.assign.course} : {self.test_name}"
+    
+    @property
+    def total_mark(self):
+        return test_total_mark[self.test_name]
+
+class Marks(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    mark_class = models.ForeignKey(MarkClass, on_delete=models.CASCADE)
+    mark = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = (("student", "mark_class"),)
+        verbose_name_plural = "Marks"
+        verbose_name = "Mark"
+
+    @property
+    def total_mark(self):
+        return test_total_mark[self.mark_class.test_name]
+
+    def clean(self):
+        max_value = self.total_mark
+        validators = [MinValueValidator(0), MaxValueValidator(max_value)]
+
+        for validator in validators:
+            validator(self.mark)
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(Marks, self).save(*args, **kwargs)
