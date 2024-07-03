@@ -1,7 +1,7 @@
 from email.policy import default
 from tabnanny import verbose
 from wsgiref.validate import validator
-from django.db import models
+from django.db import Error, models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -137,7 +137,7 @@ class Assign(models.Model):
         unique_together = (("course", "class_id", "faculty"),)
 
     def __str__(self):
-        return f"{self.faculty_id} : {self.course_id} : {self.class_id_id}"
+        return f"{self.course} : {self.class_id.id}"
 
 
 # useful for getting timetable for faculties
@@ -262,6 +262,9 @@ class Marks(models.Model):
 
         for validator in validators:
             validator(self.mark)
+            
+        if self.mark_class.assign.class_id != self.student.class_id:
+            raise ValidationError(f'The student {self.student.name} is not a student of class {self.mark_class.assign.class_id.id}')
 
     def save(self, *args, **kwargs):
         self.clean()

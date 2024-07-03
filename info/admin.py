@@ -108,6 +108,7 @@ admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(Assign, AssignAdmin)
 admin.site.register(AttendanceClass, AttendanceClassAdmin)
-# admin.site.register(Marks)
+admin.site.register(MarkClass)
+admin.site.register(Marks)
 
 # admin.site.register(Attendance)
