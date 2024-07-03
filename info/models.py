@@ -107,7 +107,7 @@ class Student(models.Model):
 
 
 class Faculty(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     id = models.CharField(primary_key=True, max_length=100)
     dept = models.ForeignKey(Dept, on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=100)
@@ -121,8 +121,8 @@ class Faculty(models.Model):
         verbose_name_plural = "Faculties"
 
     def save(self, *args, **kwargs):
-        self.id = self.user.username.upper()
-        return super(Student, self).save(*args, **kwargs)
+        self.id = self.id.upper()
+        return super(Faculty, self).save(*args, **kwargs)
 
 
 # Assigning to faculties with course and class(Branches)
