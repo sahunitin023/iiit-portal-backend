@@ -1,13 +1,19 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, decorators
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 
-from info.serializers import FacultySerializer, StudentSerializer
-from .models import Dept, Faculty, Student, User
+from info.serializers import (
+    AssignSerializer,
+    ClassSerializer,
+    DeptSerializer,
+    FacultySerializer,
+    StudentSerializer,
+)
+from .models import Assign, Class, Dept, Faculty, Student, User
 
 
 class CustomTokenVerificationView(APIView):
@@ -53,10 +59,12 @@ class CustomTokenVerificationView(APIView):
 # ______________ADMIN VIEWS______________________
 
 
-class AdminFacultyCreateView(generics.CreateAPIView):
+class FacultyListCreateView(generics.ListCreateAPIView):
     queryset = Faculty.objects.all()
     serializer_class = FacultySerializer
-    permission_classes=[IsAdminUser, ]
+    permission_classes = [
+        IsAdminUser,
+    ]
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -83,10 +91,12 @@ class AdminFacultyCreateView(generics.CreateAPIView):
         serializer.save(user=user)
 
 
-class AdminStudentCreateView(generics.CreateAPIView):
+class StudentListCreateAPIView(generics.ListCreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    # permission_classes=[IsAdminUser, ]
+    permission_classes = [
+        IsAdminUser,
+    ]
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -107,3 +117,46 @@ class AdminStudentCreateView(generics.CreateAPIView):
         user.save()
         # Save the Faculty instance and associate it with the User
         serializer.save(user=user)
+
+
+class DeptListCreateView(generics.ListCreateAPIView):
+    queryset = Dept.objects.all()
+    serializer_class = DeptSerializer
+    permission_classes = [IsAdminUser]
+
+
+class ClassListCreateView(generics.ListCreateAPIView):
+    queryset = Class.objects.all()
+    serializer_class = ClassSerializer
+    permission_classes = [IsAdminUser]
+
+
+# ________________FACULTY VIEWS__________________________
+
+
+class FacultyAssignListView(generics.ListAPIView):
+    queryset = Assign.objects.all()
+    serializer_class = AssignSerializer
+
+    def list(self, request, faculty_id, *args, **kwargs):
+        if not faculty_id:
+            return Response([], status=status.HTTP_200_OK)
+
+        queryset = self.get_queryset().filter(faculty=faculty_id)
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class ClassStudentListView(generics.ListAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+    def list(self, request, class_id, *args, **kwargs):
+        class_obj = get_object_or_404(Class, id=class_id)
+        queryset = class_obj.student_set.all() # by reverse realtionship between Class and Student
+        queryset = self.filter_queryset(queryset)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

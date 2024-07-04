@@ -5,10 +5,14 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import *
 
 urlpatterns = [
-    path(
-        "auth/token/", CustomTokenVerificationView.as_view(), name="token_obtain_pair"
-    ),
+    path("auth/token/", CustomTokenVerificationView.as_view(), name="token_obtain_pair"),
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("admin/faculty/create/", AdminFacultyCreateView.as_view(), name="add_faculty"),
-    path("admin/student/create/", AdminStudentCreateView.as_view(), name="add_student"),
+    
+    path("admin/faculty/", FacultyListCreateView.as_view(), name="add_faculty"),
+    path("admin/student/", StudentListCreateAPIView.as_view(), name="add_student"),
+    path("admin/class/", ClassListCreateView.as_view(), name="list&create_classes"),
+    path("admin/dept/", DeptListCreateView.as_view(), name="list&create_departments"),
+    
+    path("faculty/<str:faculty_id>/classes/", FacultyAssignListView.as_view(), name="list_faculty_classes"),
+    path("classes/<str:class_id>/students/", ClassStudentListView.as_view(), name="list_class_students"),
 ]

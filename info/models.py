@@ -134,7 +134,7 @@ class Assign(models.Model):
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (("course", "class_id", "faculty"),)
+        unique_together = (("course", "class_id",),)
 
     def __str__(self):
         return f"{self.course} : {self.class_id.id}"

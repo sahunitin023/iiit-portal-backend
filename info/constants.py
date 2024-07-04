@@ -39,14 +39,14 @@ ATTENDANCE_STATUS_CHOICES = (
 
 test_name = (
     ("Quiz", "Quiz"),
-    ("Teacher Assessment", "Teacher Assessment"),
+    ("Faculty Assessment", "Faculty Assessment"),
     ("Mid Semester Exam", "Mid Semester Exam"),
     ("End Semester Exam", "End Semester Exam"),
 )
 
 test_total_mark = {
     "Quiz":15,
-    "Teacher Assessment":5,
+    "Faculty Assessment":5,
     "Mid Semester Exam":30,
     "End Semester Exam":50,
 }
