@@ -134,7 +134,12 @@ class Assign(models.Model):
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (("course", "class_id",),)
+        unique_together = (
+            (
+                "course",
+                "class_id",
+            ),
+        )
 
     def __str__(self):
         return f"{self.course} : {self.class_id.id}"
@@ -234,13 +239,14 @@ class MarkClass(models.Model):
     assign = models.ForeignKey(Assign, on_delete=models.CASCADE)
     test_name = models.CharField(max_length=50, choices=test_name)
     status = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return f"{self.assign.class_id} : {self.assign.course} : {self.test_name}"
-    
+
     @property
     def total_mark(self):
         return test_total_mark[self.test_name]
+
 
 class Marks(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -262,9 +268,11 @@ class Marks(models.Model):
 
         for validator in validators:
             validator(self.mark)
-            
+
         if self.mark_class.assign.class_id != self.student.class_id:
-            raise ValidationError(f'The student {self.student.name} is not a student of class {self.mark_class.assign.class_id.id}')
+            raise ValidationError(
+                f"The student {self.student.name} is not a student of class {self.mark_class.assign.class_id.id}"
+            )
 
     def save(self, *args, **kwargs):
         self.clean()

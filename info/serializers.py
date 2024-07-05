@@ -70,13 +70,16 @@ class FacultyAssignSerializer(serializers.ModelSerializer):
 class TimetableAssignSerializer(serializers.ModelSerializer):
     course = serializers.SerializerMethodField()
     class_info = serializers.SerializerMethodField()
-
+    faculty = serializers.SerializerMethodField()
     class Meta:
         model = Assign
-        fields = ["course", "class_info"]
+        fields = ["course", "class_info", "faculty"]
 
     def get_course(self, obj: Assign):
         return obj.course.shortname
+    
+    def get_faculty(self, obj:Assign):
+        return obj.faculty.name
 
     def get_class_info(self, obj: Assign):
         return f"{obj.class_id.branch.short_name} {obj.class_id.batch}"

@@ -166,6 +166,23 @@ class FacultyTimetableListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+#_________________STUDENT VIEWS______________________
+
+
+class ClassTimetableListView(generics.ListAPIView):
+    queryset = AssignTime.objects.all()
+    serializer_class = AssignTimeSerializer
+
+    def list(self, request, class_id, *args, **kwargs):
+        if not class_id:
+            return Response([], status=status.HTTP_200_OK)
+
+        queryset = self.get_queryset().filter(assign__class_id=class_id)
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 # ____________________OTHERS__________________________________
 
