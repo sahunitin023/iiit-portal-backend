@@ -62,8 +62,8 @@ class FacultyAssignSerializer(serializers.ModelSerializer):
     def get_assigntimes(self, obj):
         assign_obj = get_object_or_404(Assign, id=obj.id)
         queryset = assign_obj.assigntime_set.all()
-        serializer = AssignTimeInLineSerializer(queryset, many=True).data
-        return serializer
+        serializer = AssignTimeInLineSerializer(queryset, many=True)
+        return serializer.data
 
 
 # Assign Serializer for Timetable View
@@ -71,14 +71,15 @@ class TimetableAssignSerializer(serializers.ModelSerializer):
     course = serializers.SerializerMethodField()
     class_info = serializers.SerializerMethodField()
     faculty = serializers.SerializerMethodField()
+
     class Meta:
         model = Assign
         fields = ["course", "class_info", "faculty"]
 
     def get_course(self, obj: Assign):
-        return obj.course.shortname
-    
-    def get_faculty(self, obj:Assign):
+        return obj.course.name
+
+    def get_faculty(self, obj: Assign):
         return obj.faculty.name
 
     def get_class_info(self, obj: Assign):

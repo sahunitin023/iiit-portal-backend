@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.http.request import HttpRequest
 
-from .mixins import ReadOnlyInLine
 from .models import *
 from .constants import degree_in_short
 

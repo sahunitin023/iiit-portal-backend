@@ -82,9 +82,9 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "iiitportal",
-        "USER": "nitin",
-        "PASSWORD": "035@Nitin",
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
         "HOST": "localhost",
         "PORT": "5432",
     }
