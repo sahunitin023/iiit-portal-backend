@@ -7,13 +7,14 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 
 from info.serializers import (
-    AssignSerializer,
+    FacultyAssignSerializer,
+    AssignTimeSerializer,
     ClassSerializer,
     DeptSerializer,
     FacultySerializer,
     StudentSerializer,
 )
-from .models import Assign, Class, Dept, Faculty, Student, User
+from .models import Assign, AssignTime, Class, Dept, Faculty, Student, User
 
 
 class CustomTokenVerificationView(APIView):
@@ -136,7 +137,7 @@ class ClassListCreateView(generics.ListCreateAPIView):
 
 class FacultyAssignListView(generics.ListAPIView):
     queryset = Assign.objects.all()
-    serializer_class = AssignSerializer
+    serializer_class = FacultyAssignSerializer
 
     def list(self, request, faculty_id, *args, **kwargs):
         if not faculty_id:
@@ -150,13 +151,34 @@ class FacultyAssignListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class FacultyTimetableListView(generics.ListAPIView):
+    queryset = AssignTime.objects.all()
+    serializer_class = AssignTimeSerializer
+
+    def list(self, request, faculty_id, *args, **kwargs):
+        if not faculty_id:
+            return Response([], status=status.HTTP_200_OK)
+
+        queryset = self.get_queryset().filter(assign__faculty=faculty_id)
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+# ____________________OTHERS__________________________________
+
+
 class ClassStudentListView(generics.ListAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
     def list(self, request, class_id, *args, **kwargs):
         class_obj = get_object_or_404(Class, id=class_id)
-        queryset = class_obj.student_set.all() # by reverse realtionship between Class and Student
+        queryset = (
+            class_obj.student_set.all()
+        )  # by reverse realtionship between Class and Student
         queryset = self.filter_queryset(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

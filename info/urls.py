@@ -14,5 +14,7 @@ urlpatterns = [
     path("admin/dept/", DeptListCreateView.as_view(), name="list&create_departments"),
     
     path("faculty/<str:faculty_id>/classes/", FacultyAssignListView.as_view(), name="list_faculty_classes"),
+    path("faculty/<str:faculty_id>/timetable/", FacultyTimetableListView.as_view(), name="faculty_timetable"),
+    
     path("classes/<str:class_id>/students/", ClassStudentListView.as_view(), name="list_class_students"),
 ]
