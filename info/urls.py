@@ -8,13 +8,14 @@ urlpatterns = [
     path("auth/token/", CustomTokenVerificationView.as_view(), name="token_obtain_pair"),
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     
-    path("admin/faculty/", FacultyListCreateView.as_view(), name="add_faculty"),
-    path("admin/student/", StudentListCreateAPIView.as_view(), name="add_student"),
-    path("admin/class/", ClassListCreateView.as_view(), name="list&create_classes"),
-    path("admin/dept/", DeptListCreateView.as_view(), name="list&create_departments"),
+    path("admin/faculty/", FacultyListCreateView.as_view(), name="list&add_faculty"),
+    path("admin/student/", StudentListCreateAPIView.as_view(), name="list&add_student"),
+    path("admin/class/", ClassListCreateView.as_view(), name="list&add_classes"),
+    path("admin/dept/", DeptListCreateView.as_view(), name="list&add_departments"),
     
     path("faculty/<str:faculty_id>/classes/", FacultyAssignListView.as_view(), name="list_faculty_classes"),
     path("faculty/<str:faculty_id>/timetable/", FacultyTimetableListView.as_view(), name="faculty_timetable"),
+    path("faculty/<str:faculty_id>/class/attendance/", FacultyAttendanceClassListView.as_view(), name="faculty_class_attendance"),
 
     path("class/<str:class_id>/timetable/", ClassTimetableListView.as_view(), name="class_timetable"),
     path("class/<str:class_id>/students/", ClassStudentListView.as_view(), name="list_class_students"),

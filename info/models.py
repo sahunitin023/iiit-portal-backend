@@ -185,11 +185,11 @@ class AttendanceClass(models.Model):
 
 # Student's Attendance
 class Attendance(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     attendanceclass = models.ForeignKey(AttendanceClass, on_delete=models.CASCADE)
-    date = models.DateField(null=True)
     status = models.BooleanField(default=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)  # remove
+    date = models.DateField(null=True)  # remove
 
     def __str__(self):
         return f"{self.student.name} : {self.course.shortname}"
@@ -200,39 +200,16 @@ class Attendance(models.Model):
         return super(Attendance, self).save(*args, **kwargs)
 
 
-class AttendanceTotal(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+class AttendanceRange(models.Model):
+    start_date = models.DateField()
+    end_date = models.DateField()
 
-    class Meta:
-        unique_together = (("student", "course"),)
+    max_rows = 1
 
-    @property
-    def attd_class(self) -> int:
-        att_class = Attendance.objects.filter(
-            course=self.course, student=self.student, status=True
-        ).count()
-        return att_class
-
-    @property
-    def total_class(self) -> int:
-        att_class = Attendance.objects.filter(
-            course=self.course, student=self.student
-        ).count()
-        return att_class
-
-    @property
-    def classes_to_attend(self):
-        total_class = Attendance.objects.filter(
-            course=self.course, student=self.student
-        ).count()
-        att_class = Attendance.objects.filter(
-            course=self.course, student=self.student, status=True
-        ).count()
-        cta = 3 * total_class - 4 * att_class
-        if cta < 0:
-            return 0
-        return cta
+    def save(self, *args, **kwargs):
+        if not self.pk and AttendanceRange.objects.count() == self.max_rows:
+            raise ValidationError(f"Cannot have multiple semester start and end dates.")
+        super(AttendanceRange, self).save(*args, **kwargs)
 
 
 class MarkClass(models.Model):
@@ -277,3 +254,38 @@ class Marks(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super(Marks, self).save(*args, **kwargs)
+
+
+class StudentCourse(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (("student", "course"),)
+
+    @property
+    def attd_class(self) -> int:
+        att_class = Attendance.objects.filter(
+            course=self.course, student=self.student, status=True
+        ).count()
+        return att_class
+
+    @property
+    def total_class(self) -> int:
+        att_class = Attendance.objects.filter(
+            course=self.course, student=self.student
+        ).count()
+        return att_class
+
+    @property
+    def classes_to_attend(self):
+        total_class = Attendance.objects.filter(
+            course=self.course, student=self.student
+        ).count()
+        att_class = Attendance.objects.filter(
+            course=self.course, student=self.student, status=True
+        ).count()
+        cta = 3 * total_class - 4 * att_class
+        if cta < 0:
+            return 0
+        return cta

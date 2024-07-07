@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import status, generics, decorators
+from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 
 from info.serializers import (
+    AttendanceClassSerializer,
     FacultyAssignSerializer,
     AssignTimeSerializer,
     ClassSerializer,
@@ -14,7 +15,16 @@ from info.serializers import (
     FacultySerializer,
     StudentSerializer,
 )
-from .models import Assign, AssignTime, Class, Dept, Faculty, Student, User
+from .models import (
+    Assign,
+    AssignTime,
+    AttendanceClass,
+    Class,
+    Dept,
+    Faculty,
+    Student,
+    User,
+)
 
 
 class CustomTokenVerificationView(APIView):
@@ -63,9 +73,9 @@ class CustomTokenVerificationView(APIView):
 class FacultyListCreateView(generics.ListCreateAPIView):
     queryset = Faculty.objects.all()
     serializer_class = FacultySerializer
-    permission_classes = [
-        IsAdminUser,
-    ]
+    # permission_classes = [
+    #     IsAdminUser,
+    # ]
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -95,9 +105,9 @@ class FacultyListCreateView(generics.ListCreateAPIView):
 class StudentListCreateAPIView(generics.ListCreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    permission_classes = [
-        IsAdminUser,
-    ]
+    # permission_classes = [
+    #     IsAdminUser,
+    # ]
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -123,18 +133,19 @@ class StudentListCreateAPIView(generics.ListCreateAPIView):
 class DeptListCreateView(generics.ListCreateAPIView):
     queryset = Dept.objects.all()
     serializer_class = DeptSerializer
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
 
 class ClassListCreateView(generics.ListCreateAPIView):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
 
 # ________________FACULTY VIEWS__________________________
 
 
+# List of Classes
 class FacultyAssignListView(generics.ListAPIView):
     queryset = Assign.objects.all()
     serializer_class = FacultyAssignSerializer
@@ -144,6 +155,29 @@ class FacultyAssignListView(generics.ListAPIView):
             return Response([], status=status.HTTP_200_OK)
 
         queryset = self.get_queryset().filter(faculty=faculty_id)
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+# List Class's Course Attendance
+class FacultyAttendanceClassListView(generics.ListAPIView):
+    queryset = AttendanceClass.objects.all()
+    serializer_class = AttendanceClassSerializer
+
+    def list(self, request, faculty_id=None, *args, **kwargs):
+        course_id = request.data.get("course") or None
+        class_id = request.data.get("class") or None
+        if not course_id or not class_id or not faculty_id:
+            return Response([], status=status.HTTP_200_OK)
+
+        queryset = self.get_queryset().filter(
+            assign__course=course_id,
+            assign__class_id=class_id,
+            assign__faculty=faculty_id,
+        )
 
         queryset = self.filter_queryset(queryset)
 

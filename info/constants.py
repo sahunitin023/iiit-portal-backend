@@ -32,9 +32,9 @@ DAYS_OF_WEEK = (
 )
 
 ATTENDANCE_STATUS_CHOICES = (
-    (0, 'Attendance not Marked'),
-    (1, 'Attendance Marked'),
-    (2, 'Class cancelled'),
+    (0, "Attendance not Marked"),
+    (1, "Attendance Marked"),
+    (2, "Class cancelled"),
 )
 
 test_name = (
@@ -45,8 +45,17 @@ test_name = (
 )
 
 test_total_mark = {
-    "Quiz":15,
-    "Faculty Assessment":5,
-    "Mid Semester Exam":30,
-    "End Semester Exam":50,
+    "Quiz": 15,
+    "Faculty Assessment": 5,
+    "Mid Semester Exam": 30,
+    "End Semester Exam": 50,
+}
+
+days = {
+    "Monday": 1,
+    "Tuesday": 2,
+    "Wednesday": 3,
+    "Thursday": 4,
+    "Friday": 5,
+    "Saturday": 6,
 }

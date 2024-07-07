@@ -44,6 +44,11 @@ class FacultySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class AttendanceClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttendanceClass
+        exclude = ["assign"]
+
 # Assign Serializer for Faculty View
 class FacultyAssignSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
@@ -99,3 +104,4 @@ class AssignTimeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AssignTime
         fields = ["period", "day", "assign"]
+

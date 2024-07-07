@@ -26,10 +26,11 @@ class AssignTimeInline(admin.TabularInline):
 
 class AttendanceInline(admin.TabularInline):
     # can_delete = False
-    readonly_fields=['course', 'date']
-    raw_id_fields=['student']
-    model=Attendance
-    extra=0
+    readonly_fields = ["course", "date"]
+    raw_id_fields = ["student"]
+    model = Attendance
+    extra = 0
+
 
 # ---------------------------Admin Panels---------------------------
 class DeptAdmin(admin.ModelAdmin):
@@ -59,9 +60,8 @@ class ClassAdmin(admin.ModelAdmin):
         return degree_in_short[obj.degree]
 
 
-
 class StudentAdmin(admin.ModelAdmin):
-    exclude=['id']
+    exclude = ["id"]
     list_display = ["id", "name", "class_id", "phone_number"]
     search_fields = ["id", "name", "class_id"]
     raw_id_fields = ["class_id"]
@@ -80,22 +80,24 @@ class FacultyAdmin(admin.ModelAdmin):
 
 
 class AssignAdmin(admin.ModelAdmin):
-    inlines=[AssignTimeInline]
+    inlines = [AssignTimeInline]
     list_display = ["course", "class_id", "faculty"]
     search_fields = ["course", "class_id", "faculty"]
-    
+
+
 class AttendanceClassAdmin(admin.ModelAdmin):
-    inlines=[AttendanceInline]
-    list_display = ('assign', 'date', 'status')
-    ordering = ['assign', 'date']
+    inlines = [AttendanceInline]
+    list_display = ("assign", "date", "status")
+    ordering = ["assign", "date"]
+
 
 # class AttendanceAdmin(admin.ModelAdmin):
-    # exclude =['course', 'date']
-    
-    # def get_exclude(self, request, obj=None):
-    #     if request.method == 'GET':
-    #         return self.exclude
-        
+# exclude =['course', 'date']
+
+# def get_exclude(self, request, obj=None):
+#     if request.method == 'GET':
+#         return self.exclude
+
 
 # Register of Admin Site
 admin.site.register(User, UserAdmin)
@@ -109,5 +111,6 @@ admin.site.register(Assign, AssignAdmin)
 admin.site.register(AttendanceClass, AttendanceClassAdmin)
 admin.site.register(MarkClass)
 admin.site.register(Marks)
+admin.site.register(AttendanceRange)
 
 # admin.site.register(Attendance)
