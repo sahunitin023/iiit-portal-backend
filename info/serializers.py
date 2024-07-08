@@ -49,6 +49,7 @@ class AttendanceClassSerializer(serializers.ModelSerializer):
         model = AttendanceClass
         exclude = ["assign"]
 
+
 # Assign Serializer for Faculty View
 class FacultyAssignSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
@@ -105,3 +106,8 @@ class AssignTimeSerializer(serializers.ModelSerializer):
         model = AssignTime
         fields = ["period", "day", "assign"]
 
+
+class StudentAttendanceSerializer(serializers.Serializer):
+    attd_class = serializers.IntegerField()
+    absent_students = serializers.ListField(child=serializers.CharField())
+    

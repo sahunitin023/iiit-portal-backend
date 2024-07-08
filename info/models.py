@@ -194,10 +194,6 @@ class Attendance(models.Model):
     def __str__(self):
         return f"{self.student.name} : {self.course.shortname}"
 
-    def save(self, *args, **kwargs):
-        self.date = self.attendanceclass.date
-        self.course = self.attendanceclass.assign.course
-        return super(Attendance, self).save(*args, **kwargs)
 
 
 class AttendanceRange(models.Model):

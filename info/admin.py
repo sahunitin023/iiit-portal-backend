@@ -111,6 +111,6 @@ admin.site.register(Assign, AssignAdmin)
 admin.site.register(AttendanceClass, AttendanceClassAdmin)
 admin.site.register(MarkClass)
 admin.site.register(Marks)
-admin.site.register(AttendanceRange)
+# admin.site.register(AttendanceRange)
 
 # admin.site.register(Attendance)

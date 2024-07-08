@@ -5,6 +5,8 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
+from django.forms import ValidationError
+
 
 from info.serializers import (
     AttendanceClassSerializer,
@@ -13,11 +15,13 @@ from info.serializers import (
     ClassSerializer,
     DeptSerializer,
     FacultySerializer,
+    StudentAttendanceSerializer,
     StudentSerializer,
 )
 from .models import (
     Assign,
     AssignTime,
+    Attendance,
     AttendanceClass,
     Class,
     Dept,
@@ -183,6 +187,59 @@ class FacultyAttendanceClassListView(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
+    serializer_class = StudentAttendanceSerializer
+
+    def perform_create(self, serializer):
+        validated_data = serializer.validated_data
+        attd_class_id = validated_data.get("attd_class")
+        absent_students = validated_data.get("absent_students")
+
+        try:
+            attendance_class = AttendanceClass.objects.get(pk=attd_class_id)
+        except AttendanceClass.DoesNotExist:
+            raise ValidationError("AttendanceClass does not exist")
+        # Attendance Create
+        if attendance_class.status == 0:
+            attendance_instances = []
+            class_students = Student.objects.filter(
+                class_id=attendance_class.assign.class_id
+            )
+
+            for student in class_students:
+
+                status = student.id not in absent_students
+
+                attendance_instance = Attendance(
+                    student=student,
+                    attendanceclass=attendance_class,
+                    status=status,
+                    course=attendance_class.assign.course,
+                    date=attendance_class.date,
+                )
+                attendance_instances.append(attendance_instance)
+
+            Attendance.objects.bulk_create(attendance_instances)
+
+            # Updating status of the AttendanceClass as "Attendance Marked"
+            attendance_class.status = 1
+            attendance_class.save()
+
+        # Attendance update
+        elif attendance_class.status == 1:
+
+            for attendance in Attendance.objects.filter(
+                attendanceclass=attendance_class
+            ):
+                attendance.status = attendance.student.id not in absent_students
+                attendance.save()
+
+        else:
+            raise ValidationError("Class has been cancelled.")
+
+        return validated_data
 
 
 class FacultyTimetableListView(generics.ListAPIView):

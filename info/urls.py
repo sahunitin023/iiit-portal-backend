@@ -16,6 +16,7 @@ urlpatterns = [
     path("faculty/<str:faculty_id>/classes/", FacultyAssignListView.as_view(), name="list_faculty_classes"),
     path("faculty/<str:faculty_id>/timetable/", FacultyTimetableListView.as_view(), name="faculty_timetable"),
     path("faculty/<str:faculty_id>/class/attendance/", FacultyAttendanceClassListView.as_view(), name="faculty_class_attendance"),
+    path("faculty/class/attendance/submit/", FacultyStudentAttendanceCreateView.as_view(), name="class_attendance_submit"),
 
     path("class/<str:class_id>/timetable/", ClassTimetableListView.as_view(), name="class_timetable"),
     path("class/<str:class_id>/students/", ClassStudentListView.as_view(), name="list_class_students"),
