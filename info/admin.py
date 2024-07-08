@@ -26,7 +26,7 @@ class AssignTimeInline(admin.TabularInline):
 
 class AttendanceInline(admin.TabularInline):
     # can_delete = False
-    readonly_fields = ["course", "date"]
+    # readonly_fields = ["course", "date"]
     raw_id_fields = ["student"]
     model = Attendance
     extra = 0
@@ -108,9 +108,8 @@ admin.site.register(Class, ClassAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(Assign, AssignAdmin)
-admin.site.register(AttendanceClass, AttendanceClassAdmin)
 admin.site.register(MarkClass)
 admin.site.register(Marks)
+# admin.site.register(AttendanceClass, AttendanceClassAdmin)
 # admin.site.register(AttendanceRange)
-
 # admin.site.register(Attendance)

@@ -50,7 +50,7 @@ def create_student_course(sender, instance: Attendance, **kwargs):
         try:
             StudentCourse.objects.get(course=course, student=student)
         except StudentCourse.DoesNotExist:
-            a = StudentCourse.objects.get(
+            a = StudentCourse(
                 course=instance.attendanceclass.assign.course, student=instance.student
             )
             a.save()

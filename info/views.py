@@ -6,6 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 from django.forms import ValidationError
+from django.db.models.signals import post_save
 
 
 from info.serializers import (
@@ -15,7 +16,8 @@ from info.serializers import (
     ClassSerializer,
     DeptSerializer,
     FacultySerializer,
-    StudentAttendanceSerializer,
+    StudentAttendanceSubmitSerializer,
+    StudentAttendanceViewSerializer,
     StudentSerializer,
 )
 from .models import (
@@ -27,6 +29,7 @@ from .models import (
     Dept,
     Faculty,
     Student,
+    StudentCourse,
     User,
 )
 
@@ -190,7 +193,7 @@ class FacultyAttendanceClassListView(generics.ListAPIView):
 
 
 class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
-    serializer_class = StudentAttendanceSerializer
+    serializer_class = StudentAttendanceSubmitSerializer
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -223,6 +226,10 @@ class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
 
             Attendance.objects.bulk_create(attendance_instances)
 
+            # Manually trigger post_save signals
+            for instance in attendance_instances:
+                post_save.send(sender=Attendance, instance=instance, created=True)
+
             # Updating status of the AttendanceClass as "Attendance Marked"
             attendance_class.status = 1
             attendance_class.save()
@@ -240,6 +247,26 @@ class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
             raise ValidationError("Class has been cancelled.")
 
         return validated_data
+
+
+class FacultyClassCancelUpdateView(generics.UpdateAPIView):
+    queryset = AttendanceClass.objects.all()
+    lookup_field = "attendance_class_id"
+
+    def get_attendance_class_id(self, request, attendance_class_id, *args, **kwargs):
+        return attendance_class_id
+
+    def partial_update(self, request, attendance_class_id, *args, **kwargs):
+        try:
+            attd_class = AttendanceClass.objects.get(pk=attendance_class_id)
+        except:
+            return Response(
+                {"error": "Provide a valid Attendance Class ID"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        attd_class.status = 2
+        attd_class.save()
+        return Response({"message": "Class Cancelled"}, status=status.HTTP_202_ACCEPTED)
 
 
 class FacultyTimetableListView(generics.ListAPIView):
@@ -261,7 +288,19 @@ class FacultyTimetableListView(generics.ListAPIView):
 # _________________STUDENT VIEWS______________________
 
 
-class ClassTimetableListView(generics.ListAPIView):
+class StudentAttendanceRetrieveView(generics.RetrieveAPIView):
+
+    queryset = StudentCourse.objects.all()
+    serializer_class = StudentAttendanceViewSerializer
+    lookup_field = "id"
+    
+    def get(self, request, id, course_id, *args, **kwargs):
+        queryset = self.get_queryset().get(student=id, course=course_id)
+        serializer = self.get_serializer(queryset, many=False)
+        return Response(serializer.data)
+
+
+class StudentClassTimetableListView(generics.ListAPIView):
     queryset = AssignTime.objects.all()
     serializer_class = AssignTimeSerializer
 
