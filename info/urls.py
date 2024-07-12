@@ -19,6 +19,7 @@ urlpatterns = [
     path("faculty/class/attendance/submit/", FacultyStudentAttendanceCreateView.as_view(), name="class_attendance_submit"),
     path("faculty/class/cancel/<int:attendance_class_id>/", FacultyClassCancelUpdateView.as_view(), name="class_attendance_submit"),
     path("faculty/<str:faculty_id>/class/mark/", FacultyMarkClassListView.as_view(), name="faculty_class_mark"),
+    path("faculty/class/mark/submit/", FacultyStudentMarkCreateView.as_view(), name="class_mark_submit"),
 
     path("student/<str:id>/attendance/<str:course_id>/", StudentAttendanceRetrieveView.as_view(), name="view_student_attendance"),
 

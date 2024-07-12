@@ -1,7 +1,4 @@
-from email.policy import default
-from tabnanny import verbose
-from wsgiref.validate import validator
-from django.db import Error, models
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -213,6 +210,9 @@ class MarkClass(models.Model):
     test_name = models.CharField(max_length=50, choices=test_name)
     status = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = (("assign", "test_name"),)
+        
     def __str__(self):
         return f"{self.assign.class_id} : {self.assign.course} : {self.test_name}"
 

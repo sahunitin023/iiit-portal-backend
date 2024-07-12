@@ -123,3 +123,7 @@ class MarkClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarkClass
         exclude = ["assign"]
+        
+class StudentMarkSubmitSerializer(serializers.Serializer):
+    mark_class = serializers.IntegerField()
+    students_mark = serializers.DictField(child=serializers.IntegerField())

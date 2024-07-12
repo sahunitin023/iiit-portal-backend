@@ -19,6 +19,7 @@ from info.serializers import (
     MarkClassSerializer,
     StudentAttendanceSubmitSerializer,
     StudentAttendanceViewSerializer,
+    StudentMarkSubmitSerializer,
     StudentSerializer,
 )
 from .models import (
@@ -30,6 +31,7 @@ from .models import (
     Dept,
     Faculty,
     MarkClass,
+    Marks,
     Student,
     StudentCourse,
     User,
@@ -246,7 +248,10 @@ class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
                 attendance.save()
 
         else:
-            raise ValidationError("Class has been cancelled.")
+            return Response(
+                data={"message": "Class has already been cancelled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return validated_data
 
@@ -309,6 +314,68 @@ class FacultyMarkClassListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
+class FacultyStudentMarkCreateView(generics.CreateAPIView):
+    serializer_class = StudentMarkSubmitSerializer
+
+    def perform_create(self, serializer):
+        validated_data = serializer.validated_data
+        mark_class_id = validated_data.get("mark_class")
+        students_mark = validated_data.get("students_mark")
+
+        try:
+            mark_class = MarkClass.objects.get(pk=mark_class_id)
+        except MarkClass.DoesNotExist:
+            raise ValidationError("MarkClass does not exist")
+
+        # Mark Create
+        if not mark_class.status:
+
+            for student_id, mark in students_mark.items():
+                try:
+                    student = Student.objects.get(pk=student_id)
+                except Student.DoesNotExist:
+                    raise ValidationError(
+                        f"Student with id {student_id} does not exist"
+                    )
+
+                marks_instance = Marks(
+                    student=student, mark_class=mark_class, mark=mark
+                )
+                marks_instance.save()
+
+            # Marks.objects.bulk_create(mark_instances)
+
+            # Updating status of the AttendanceClass as "Attendance Marked"
+            mark_class.status = True
+            mark_class.save()
+
+        # Mark update
+        else:
+            for student_id, mark in students_mark.items():
+                try:
+                    student = Student.objects.get(pk=student_id)
+                except Student.DoesNotExist:
+                    raise ValidationError(
+                        f"Student with id {student_id} does not exist"
+                    )
+                    
+                try:
+                    marks_instance = Marks.objects.get(
+                        student=student,
+                        mark_class=mark_class,
+                    )
+                except Marks.DoesNotExist:
+                    marks_instance = Marks(
+                        student=student, mark_class=mark_class
+                    )
+                    
+                marks_instance.mark = mark
+                marks_instance.save()
+
+        return validated_data
+
+
 # _________________STUDENT VIEWS______________________
 
 
@@ -317,7 +384,7 @@ class StudentAttendanceRetrieveView(generics.RetrieveAPIView):
     queryset = StudentCourse.objects.all()
     serializer_class = StudentAttendanceViewSerializer
     lookup_field = "id"
-    
+
     def get(self, request, id, course_id, *args, **kwargs):
         queryset = self.get_queryset().get(student=id, course=course_id)
         serializer = self.get_serializer(queryset, many=False)
