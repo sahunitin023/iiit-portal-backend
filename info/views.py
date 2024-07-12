@@ -16,6 +16,7 @@ from info.serializers import (
     ClassSerializer,
     DeptSerializer,
     FacultySerializer,
+    MarkClassSerializer,
     StudentAttendanceSubmitSerializer,
     StudentAttendanceViewSerializer,
     StudentSerializer,
@@ -28,6 +29,7 @@ from .models import (
     Class,
     Dept,
     Faculty,
+    MarkClass,
     Student,
     StudentCourse,
     User,
@@ -284,6 +286,28 @@ class FacultyTimetableListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
+# List Class's Course Mark
+class FacultyMarkClassListView(generics.ListAPIView):
+    queryset = MarkClass.objects.all()
+    serializer_class = MarkClassSerializer
+
+    def list(self, request, faculty_id=None, *args, **kwargs):
+        course_id = request.data.get("course") or None
+        class_id = request.data.get("class") or None
+        if not course_id or not class_id or not faculty_id:
+            return Response([], status=status.HTTP_200_OK)
+
+        queryset = self.get_queryset().filter(
+            assign__course=course_id,
+            assign__class_id=class_id,
+            assign__faculty=faculty_id,
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 # _________________STUDENT VIEWS______________________
 

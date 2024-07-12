@@ -117,3 +117,9 @@ class StudentAttendanceViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentCourse
         fields=["course", "attd_class", "total_class", "classes_to_attend"]
+        
+
+class MarkClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MarkClass
+        exclude = ["assign"]

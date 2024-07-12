@@ -1,10 +1,13 @@
 from info.models import (
+    Assign,
     AssignTime,
     Attendance,
     AttendanceRange,
     AttendanceClass,
+    MarkClass,
     StudentCourse,
 )
+from .constants import test_name
 from django.db.models.signals import post_save, post_delete
 from datetime import timedelta
 from .constants import days
@@ -56,6 +59,17 @@ def create_student_course(sender, instance: Attendance, **kwargs):
             a.save()
 
 
+def create_mark_class(sender, instance: Assign, **kwargs):
+    if kwargs["created"]:
+        for test in test_name:
+            try:
+                MarkClass.objects.get(assign=instance, test_name=test[0])
+            except MarkClass.DoesNotExist:
+                a = MarkClass(test_name=test[0], assign=instance)
+                a.save()
+
+
 post_save.connect(create_attendance_class, AssignTime)
 post_save.connect(create_student_course, Attendance)
+post_save.connect(create_mark_class, Assign)
 post_delete.connect(delete_attendance, AssignTime)
