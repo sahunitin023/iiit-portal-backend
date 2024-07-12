@@ -285,3 +285,9 @@ class StudentCourse(models.Model):
         if cta < 0:
             return 0
         return cta
+    
+    @property
+    def course_marks(self):
+        return Marks.objects.filter(
+            mark_class__assign__course=self.course, student=self.student
+        )

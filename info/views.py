@@ -20,6 +20,7 @@ from info.serializers import (
     StudentAttendanceSubmitSerializer,
     StudentAttendanceViewSerializer,
     StudentMarkSubmitSerializer,
+    StudentMarkViewSerializer,
     StudentSerializer,
 )
 from .models import (
@@ -379,15 +380,14 @@ class FacultyStudentMarkCreateView(generics.CreateAPIView):
 # _________________STUDENT VIEWS______________________
 
 
-class StudentAttendanceRetrieveView(generics.RetrieveAPIView):
+class StudentAttendanceListView(generics.ListAPIView):
 
     queryset = StudentCourse.objects.all()
     serializer_class = StudentAttendanceViewSerializer
-    lookup_field = "id"
 
-    def get(self, request, id, course_id, *args, **kwargs):
-        queryset = self.get_queryset().get(student=id, course=course_id)
-        serializer = self.get_serializer(queryset, many=False)
+    def list(self, request, student_id, *args, **kwargs):
+        queryset = self.get_queryset().filter(student=student_id)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
@@ -403,6 +403,17 @@ class StudentClassTimetableListView(generics.ListAPIView):
 
         queryset = self.filter_queryset(queryset)
 
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class StudentMarkListView(generics.ListAPIView):
+
+    queryset = StudentCourse.objects.all()
+    serializer_class = StudentMarkViewSerializer
+
+    def list(self, request, student_id, *args, **kwargs):
+        queryset = self.get_queryset().filter(student=student_id)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

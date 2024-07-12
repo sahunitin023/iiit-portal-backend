@@ -110,20 +110,45 @@ class AssignTimeSerializer(serializers.ModelSerializer):
 class StudentAttendanceSubmitSerializer(serializers.Serializer):
     attd_class = serializers.IntegerField()
     absent_students = serializers.ListField(child=serializers.CharField())
-    
-    
+
+
 class StudentAttendanceViewSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
+
     class Meta:
         model = StudentCourse
-        fields=["course", "attd_class", "total_class", "classes_to_attend"]
-        
+        fields = ["course", "attd_class", "total_class", "classes_to_attend"]
+
+
+class MarksInlineSerializer(serializers.ModelSerializer):
+    test_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Marks
+        fields = ["test_name", "mark"]
+
+    def get_test_name(self, obj: Marks):
+        return obj.mark_class.test_name
+
+
+class StudentMarkViewSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()
+    marks = serializers.ListField(source="course_marks", child=MarksInlineSerializer())
+
+    class Meta:
+        model = StudentCourse
+        fields = [
+            "course",
+            "marks",
+        ]
+
 
 class MarkClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = MarkClass
         exclude = ["assign"]
-        
+
+
 class StudentMarkSubmitSerializer(serializers.Serializer):
     mark_class = serializers.IntegerField()
     students_mark = serializers.DictField(child=serializers.IntegerField())

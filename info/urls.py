@@ -21,7 +21,8 @@ urlpatterns = [
     path("faculty/<str:faculty_id>/class/mark/", FacultyMarkClassListView.as_view(), name="faculty_class_mark"),
     path("faculty/class/mark/submit/", FacultyStudentMarkCreateView.as_view(), name="class_mark_submit"),
 
-    path("student/<str:id>/attendance/<str:course_id>/", StudentAttendanceRetrieveView.as_view(), name="view_student_attendance"),
+    path("student/<str:student_id>/attendance/", StudentAttendanceListView.as_view(), name="view_student_attendance"),
+    path("student/<str:student_id>/mark/", StudentMarkListView.as_view(), name="view_student_mark"),
 
     path("class/<str:class_id>/timetable/", StudentClassTimetableListView.as_view(), name="class_timetable"),
     path("class/<str:class_id>/students/", ClassStudentListView.as_view(), name="list_class_students"),
