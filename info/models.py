@@ -5,7 +5,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .constants import (
     ATTENDANCE_STATUS_CHOICES,
     degree_choices,
-    degree_in_short,
     sex_choice,
     time_slots,
     DAYS_OF_WEEK,

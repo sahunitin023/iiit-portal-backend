@@ -420,3 +420,5 @@ class ProfileRetrieveView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "id"
+    permission_classes = [IsAuthenticated]
+    
