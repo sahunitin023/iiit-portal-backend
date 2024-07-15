@@ -10,8 +10,8 @@ urlpatterns = [
     
     path("admin/faculty/", FacultyListCreateView.as_view(), name="list&add_faculty"),
     path("admin/student/", StudentListCreateAPIView.as_view(), name="list&add_student"),
-    path("admin/class/", ClassListCreateView.as_view(), name="list&add_classes"),
     path("admin/dept/", DeptListCreateView.as_view(), name="list&add_departments"),
+    path("admin/class/", ClassListCreateView.as_view(), name="list&add_classes"),
     
     path("faculty/<str:faculty_id>/class/", FacultyAssignListView.as_view(), name="list_faculty_classes"),
     path("faculty/<str:faculty_id>/timetable/", FacultyTimetableListView.as_view(), name="faculty_timetable"),
@@ -26,4 +26,5 @@ urlpatterns = [
 
     path("class/<str:class_id>/timetable/", StudentClassTimetableListView.as_view(), name="class_timetable"),
     path("class/<str:class_id>/students/", ClassStudentListView.as_view(), name="list_class_students"),
+    path("user/<int:id>/", ProfileRetrieveView.as_view(), name="get_user_profile"),
 ]

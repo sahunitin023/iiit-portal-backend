@@ -4,6 +4,21 @@ from rest_framework import serializers
 from .models import *
 
 
+class UserSerializer(serializers.ModelSerializer):
+    other_info = serializers.SerializerMethodField(read_only = True)
+    class Meta:
+        model = User
+        fields = ["id", "username", "first_name", "last_name", "email", "date_joined", "other_info"]
+
+    def get_other_info(self, obj:User):
+        if obj.is_faculty:
+            faculty = Faculty.objects.get(user=obj)
+            return FacultySerializer(faculty).data
+        if obj.is_student:
+            student = Student.objects.get(user=obj)
+            return StudentSerializer(student).data
+        return None
+
 class DeptSerializer(serializers.ModelSerializer):
 
     class Meta:
