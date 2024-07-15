@@ -5,12 +5,21 @@ from .models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
-    other_info = serializers.SerializerMethodField(read_only = True)
+    other_info = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "email", "date_joined", "other_info"]
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "date_joined",
+            "other_info",
+        ]
 
-    def get_other_info(self, obj:User):
+    def get_other_info(self, obj: User):
         if obj.is_faculty:
             faculty = Faculty.objects.get(user=obj)
             return FacultySerializer(faculty).data
@@ -18,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
             student = Student.objects.get(user=obj)
             return StudentSerializer(student).data
         return None
+
 
 class DeptSerializer(serializers.ModelSerializer):
 
@@ -56,7 +66,7 @@ class FacultySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Faculty
-        fields = "__all__"
+        exclude = ["user"]
 
 
 class AttendanceClassSerializer(serializers.ModelSerializer):

@@ -8,37 +8,8 @@ from rest_framework.views import APIView
 from django.forms import ValidationError
 from django.db.models.signals import post_save
 from backend import permissions
-
-
-from info.serializers import (
-    AttendanceClassSerializer,
-    FacultyAssignSerializer,
-    AssignTimeSerializer,
-    ClassSerializer,
-    DeptSerializer,
-    FacultySerializer,
-    MarkClassSerializer,
-    StudentAttendanceSubmitSerializer,
-    StudentAttendanceViewSerializer,
-    StudentMarkSubmitSerializer,
-    StudentMarkViewSerializer,
-    StudentSerializer,
-    UserSerializer,
-)
-from .models import (
-    Assign,
-    AssignTime,
-    Attendance,
-    AttendanceClass,
-    Class,
-    Dept,
-    Faculty,
-    MarkClass,
-    Marks,
-    Student,
-    StudentCourse,
-    User,
-)
+from info.serializers import *
+from .models import *
 
 
 class CustomTokenVerificationView(APIView):

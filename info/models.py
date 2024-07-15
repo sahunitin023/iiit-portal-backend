@@ -110,6 +110,10 @@ class Faculty(models.Model):
     name = models.CharField(max_length=100)
     sex = models.CharField(max_length=50, choices=sex_choice, default="Male")
     DOB = models.DateField(default="1980-01-01")
+    phone_number = models.CharField(
+        max_length=13, help_text="Include Country Code (+91)", unique=True, null=True
+    )
+    email = models.EmailField(null=True)
 
     def __str__(self):
         return self.name
