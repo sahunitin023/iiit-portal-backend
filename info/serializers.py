@@ -75,6 +75,18 @@ class AttendanceClassSerializer(serializers.ModelSerializer):
         exclude = ["assign"]
 
 
+class MarksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Marks
+        exclude = ["id"]
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        exclude = ["id"]
+
+
 # Assign Serializer for Faculty View
 class FacultyAssignSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
@@ -85,20 +97,26 @@ class FacultyAssignSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assign
-        fields = ["name", "faculty", "class_info", "course", "assigntimes"]
+        fields = [
+            "name",
+            "faculty",
+            "class_info",
+            "course",
+            # "assigntimes",
+        ]
 
     def get_name(self, obj):
         return str(obj)
 
-    def get_assigntimes(self, obj):
-        assign_obj = get_object_or_404(Assign, id=obj.id)
-        queryset = assign_obj.assigntime_set.all()
-        serializer = AssignTimeInLineSerializer(queryset, many=True)
-        return serializer.data
+    # def get_assigntimes(self, obj):
+    #     assign_obj = get_object_or_404(Assign, id=obj.id)
+    #     queryset = assign_obj.assigntime_set.all()
+    #     serializer = AssignTimeInLineSerializer(queryset, many=True)
+    #     return serializer.data
 
 
 # Assign Serializer for Timetable View
-class TimetableAssignSerializer(serializers.ModelSerializer):
+class AssignTimetableInlineSerializer(serializers.ModelSerializer):
     course = serializers.SerializerMethodField()
     class_info = serializers.SerializerMethodField()
     faculty = serializers.SerializerMethodField()
@@ -117,15 +135,15 @@ class TimetableAssignSerializer(serializers.ModelSerializer):
         return f"{obj.class_id.branch.short_name} {obj.class_id.batch}"
 
 
-class AssignTimeInLineSerializer(serializers.ModelSerializer):
+# class AssignTimeInLineSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = AssignTime
-        fields = ["period", "day"]
+#     class Meta:
+#         model = AssignTime
+#         fields = ["period", "day"]
 
 
 class AssignTimeSerializer(serializers.ModelSerializer):
-    assign = TimetableAssignSerializer()
+    assign = AssignTimetableInlineSerializer()
 
     class Meta:
         model = AssignTime
@@ -177,14 +195,3 @@ class MarkClassSerializer(serializers.ModelSerializer):
 class StudentMarkSubmitSerializer(serializers.Serializer):
     mark_class = serializers.IntegerField()
     students_mark = serializers.DictField(child=serializers.IntegerField())
-
-
-class FacultyStudentMarkViewSeriizer(serializers.ModelSerializer):
-    class Meta:
-        model = Marks
-        exclude = ['id']
-        
-class FacultyStudentAttendanceViewSeriizer(serializers.ModelSerializer):
-    class Meta:
-        model = Attendance
-        exclude = ['id']

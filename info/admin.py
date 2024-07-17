@@ -8,9 +8,9 @@ from .constants import degree_in_short
 
 
 # ---------------------------Admin Inlines---------------------------
-class ClassInLine(admin.TabularInline):
-    model = Class
-    extra = 0
+# class ClassInLine(admin.TabularInline):
+#     model = Class
+#     extra = 0
 
 
 class StudentInline(admin.TabularInline):
@@ -23,12 +23,12 @@ class AssignTimeInline(admin.TabularInline):
     extra = 0
 
 
-class AttendanceInline(admin.TabularInline):
-    # can_delete = False
-    # readonly_fields = ["course", "date"]
-    raw_id_fields = ["student"]
-    model = Attendance
-    extra = 0
+# class AttendanceInline(admin.TabularInline):
+#     # can_delete = False
+#     # readonly_fields = ["course", "date"]
+#     raw_id_fields = ["student"]
+#     model = Attendance
+#     extra = 0
 
 
 # ---------------------------Admin Panels---------------------------
@@ -84,10 +84,10 @@ class AssignAdmin(admin.ModelAdmin):
     search_fields = ["course", "class_id", "faculty"]
 
 
-class AttendanceClassAdmin(admin.ModelAdmin):
-    inlines = [AttendanceInline]
-    list_display = ("assign", "date", "status")
-    ordering = ["assign", "date"]
+# class AttendanceClassAdmin(admin.ModelAdmin):
+#     inlines = [AttendanceInline]
+#     list_display = ("assign", "date", "status")
+#     ordering = ["assign", "date"]
 
 
 # class AttendanceAdmin(admin.ModelAdmin):
@@ -107,8 +107,8 @@ admin.site.register(Class, ClassAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(Assign, AssignAdmin)
-admin.site.register(MarkClass)
-admin.site.register(Marks)
+# admin.site.register(MarkClass)
+# admin.site.register(Marks)
 # admin.site.register(AttendanceClass, AttendanceClassAdmin)
 # admin.site.register(AttendanceRange)
 # admin.site.register(Attendance)

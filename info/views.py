@@ -254,7 +254,7 @@ class FacultyClassCancelUpdateView(generics.UpdateAPIView):
 
 class FacultyClassAttendanceListView(generics.ListAPIView):
     queryset = Attendance.objects.all()
-    serializer_class = FacultyStudentAttendanceViewSeriizer
+    serializer_class = AttendanceSerializer
     permission_classes = [permissions.IsFaculty]
     
     def list(self, request, attendanceclass_id=None, *args, **kwargs):
@@ -373,7 +373,7 @@ class FacultyStudentMarkCreateView(generics.CreateAPIView):
 
 class FacultyStudentMarkListView(generics.ListAPIView):
     queryset = Marks.objects.all()
-    serializer_class = FacultyStudentMarkViewSeriizer
+    serializer_class = MarksSerializer
     permission_classes = [permissions.IsFaculty]
     
     def list(self, request, mark_class_id=None, *args, **kwargs):
