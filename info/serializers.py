@@ -177,3 +177,14 @@ class MarkClassSerializer(serializers.ModelSerializer):
 class StudentMarkSubmitSerializer(serializers.Serializer):
     mark_class = serializers.IntegerField()
     students_mark = serializers.DictField(child=serializers.IntegerField())
+
+
+class FacultyStudentMarkViewSeriizer(serializers.ModelSerializer):
+    class Meta:
+        model = Marks
+        exclude = ['id']
+        
+class FacultyStudentAttendanceViewSeriizer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        exclude = ['id']

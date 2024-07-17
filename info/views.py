@@ -132,7 +132,7 @@ class ClassListCreateView(generics.ListCreateAPIView):
 class FacultyAssignListView(generics.ListAPIView):
     queryset = Assign.objects.all()
     serializer_class = FacultyAssignSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def list(self, request, faculty_id, *args, **kwargs):
         if not faculty_id:
@@ -150,7 +150,7 @@ class FacultyAssignListView(generics.ListAPIView):
 class FacultyAttendanceClassListView(generics.ListAPIView):
     queryset = AttendanceClass.objects.all()
     serializer_class = AttendanceClassSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def list(self, request, faculty_id=None, *args, **kwargs):
         course_id = request.data.get("course") or None
@@ -172,7 +172,7 @@ class FacultyAttendanceClassListView(generics.ListAPIView):
 
 class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
     serializer_class = StudentAttendanceSubmitSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -234,7 +234,7 @@ class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
 class FacultyClassCancelUpdateView(generics.UpdateAPIView):
     queryset = AttendanceClass.objects.all()
     lookup_field = "attendance_class_id"
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def get_attendance_class_id(self, request, attendance_class_id, *args, **kwargs):
         return attendance_class_id
@@ -252,10 +252,28 @@ class FacultyClassCancelUpdateView(generics.UpdateAPIView):
         return Response({"message": "Class Cancelled"}, status=status.HTTP_202_ACCEPTED)
 
 
+class FacultyClassAttendanceListView(generics.ListAPIView):
+    queryset = Attendance.objects.all()
+    serializer_class = FacultyStudentAttendanceViewSeriizer
+    permission_classes = [permissions.IsFaculty]
+    
+    def list(self, request, attendanceclass_id=None, *args, **kwargs):
+        
+        if not attendanceclass_id:
+            return Response(data={"message": "Attendance Class ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = self.get_queryset().filter(attendanceclass_id=attendanceclass_id)
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class FacultyTimetableListView(generics.ListAPIView):
     queryset = AssignTime.objects.all()
     serializer_class = AssignTimeSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def list(self, request, faculty_id, *args, **kwargs):
         if not faculty_id:
@@ -273,7 +291,7 @@ class FacultyTimetableListView(generics.ListAPIView):
 class FacultyMarkClassListView(generics.ListAPIView):
     queryset = MarkClass.objects.all()
     serializer_class = MarkClassSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def list(self, request, faculty_id=None, *args, **kwargs):
         course_id = request.data.get("course") or None
@@ -295,7 +313,7 @@ class FacultyMarkClassListView(generics.ListAPIView):
 
 class FacultyStudentMarkCreateView(generics.CreateAPIView):
     serializer_class = StudentMarkSubmitSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsFaculty]
+    permission_classes = [permissions.IsFaculty]
 
     def perform_create(self, serializer):
         validated_data = serializer.validated_data
@@ -353,6 +371,23 @@ class FacultyStudentMarkCreateView(generics.CreateAPIView):
         return validated_data
 
 
+class FacultyStudentMarkListView(generics.ListAPIView):
+    queryset = Marks.objects.all()
+    serializer_class = FacultyStudentMarkViewSeriizer
+    permission_classes = [permissions.IsFaculty]
+    
+    def list(self, request, mark_class_id=None, *args, **kwargs):
+        
+        if not mark_class_id:
+            return Response(data={"message": "Mark Class ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        queryset = self.get_queryset().filter(mark_class_id=mark_class_id)
+
+        queryset = self.filter_queryset(queryset)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
 # _________________STUDENT VIEWS______________________
 
 
@@ -360,7 +395,7 @@ class StudentAttendanceListView(generics.ListAPIView):
 
     queryset = StudentCourse.objects.all()
     serializer_class = StudentAttendanceViewSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsStudent]
+    permission_classes = [permissions.IsStudent]
 
     def list(self, request, student_id, *args, **kwargs):
         queryset = self.get_queryset().filter(student=student_id)
@@ -371,7 +406,7 @@ class StudentAttendanceListView(generics.ListAPIView):
 class StudentClassTimetableListView(generics.ListAPIView):
     queryset = AssignTime.objects.all()
     serializer_class = AssignTimeSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsStudent]
+    permission_classes = [permissions.IsStudent]
 
     def list(self, request, class_id, *args, **kwargs):
         if not class_id:
@@ -389,7 +424,7 @@ class StudentMarkListView(generics.ListAPIView):
 
     queryset = StudentCourse.objects.all()
     serializer_class = StudentMarkViewSerializer
-    permission_classes = [permissions.IsAdminOrStaff, permissions.IsStudent]
+    permission_classes = [permissions.IsStudent]
 
     def list(self, request, student_id, *args, **kwargs):
         queryset = self.get_queryset().filter(student=student_id)

@@ -69,7 +69,7 @@ def create_mark_class(sender, instance: Assign, **kwargs):
                 a.save()
 
 
-post_save.connect(create_attendance_class, AssignTime)
 post_save.connect(create_student_course, Attendance)
+post_save.connect(create_attendance_class, AssignTime)
 post_save.connect(create_mark_class, Assign)
 post_delete.connect(delete_attendance, AssignTime)
