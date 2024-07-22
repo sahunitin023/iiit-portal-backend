@@ -1,0 +1,1035 @@
+openapi: 3.0.3
+info:
+  title: IIIT Portal API
+  version: 1.0.0
+  description: Academic Management System
+paths:
+  /api/admin/class/:
+    get:
+      operationId: api_admin_class_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Class'
+          description: ''
+    post:
+      operationId: api_admin_class_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Class'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Class'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Class'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+          description: ''
+  /api/admin/dept/:
+    get:
+      operationId: api_admin_dept_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dept'
+          description: ''
+    post:
+      operationId: api_admin_dept_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dept'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Dept'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Dept'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dept'
+          description: ''
+  /api/admin/faculty/:
+    get:
+      operationId: api_admin_faculty_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Faculty'
+          description: ''
+    post:
+      operationId: api_admin_faculty_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Faculty'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Faculty'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Faculty'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Faculty'
+          description: ''
+  /api/admin/student/:
+    get:
+      operationId: api_admin_student_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+          description: ''
+    post:
+      operationId: api_admin_student_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Student'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+  /api/auth/token/:
+    post:
+      operationId: api_auth_token_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/auth/token/refresh/:
+    post:
+      operationId: api_auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/class/{class_id}/students/:
+    get:
+      operationId: api_class_students_list
+      parameters:
+      - in: path
+        name: class_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+          description: ''
+  /api/class/{class_id}/timetable/:
+    get:
+      operationId: api_class_timetable_list
+      parameters:
+      - in: path
+        name: class_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignTime'
+          description: ''
+  /api/faculty/{faculty_id}/attendanceclass/:
+    get:
+      operationId: api_faculty_attendanceclass_list
+      parameters:
+      - in: path
+        name: faculty_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceClass'
+          description: ''
+  /api/faculty/{faculty_id}/classes/:
+    get:
+      operationId: api_faculty_classes_list
+      parameters:
+      - in: path
+        name: faculty_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FacultyAssign'
+          description: ''
+  /api/faculty/{faculty_id}/markclass/:
+    get:
+      operationId: api_faculty_markclass_list
+      parameters:
+      - in: path
+        name: faculty_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MarkClass'
+          description: ''
+  /api/faculty/{faculty_id}/timetable/:
+    get:
+      operationId: api_faculty_timetable_list
+      parameters:
+      - in: path
+        name: faculty_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignTime'
+          description: ''
+  /api/faculty/class/attendance/{attendanceclass_id}/:
+    get:
+      operationId: api_faculty_class_attendance_list
+      parameters:
+      - in: path
+        name: attendanceclass_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+          description: ''
+  /api/faculty/class/attendance/submit/:
+    post:
+      operationId: api_faculty_class_attendance_submit_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAttendanceSubmit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentAttendanceSubmit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentAttendanceSubmit'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAttendanceSubmit'
+          description: ''
+  /api/faculty/class/cancel/{attendance_class_id}/:
+    put:
+      operationId: api_faculty_class_cancel_update
+      parameters:
+      - in: path
+        name: attendance_class_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceClass'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendanceClass'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendanceClass'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceClass'
+          description: ''
+    patch:
+      operationId: api_faculty_class_cancel_partial_update
+      parameters:
+      - in: path
+        name: attendance_class_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceClass'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceClass'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceClass'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceClass'
+          description: ''
+  /api/faculty/class/marks/{mark_class_id}/:
+    get:
+      operationId: api_faculty_class_marks_list
+      parameters:
+      - in: path
+        name: mark_class_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Marks'
+          description: ''
+  /api/faculty/class/marks/submit/:
+    post:
+      operationId: api_faculty_class_marks_submit_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentMarkSubmit'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentMarkSubmit'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentMarkSubmit'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentMarkSubmit'
+          description: ''
+  /api/student/{student_id}/attendance/:
+    get:
+      operationId: api_student_attendance_list
+      parameters:
+      - in: path
+        name: student_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAttendanceView'
+          description: ''
+  /api/student/{student_id}/marks/:
+    get:
+      operationId: api_student_marks_list
+      parameters:
+      - in: path
+        name: student_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentMarkView'
+          description: ''
+  /api/user/{id}/:
+    get:
+      operationId: api_user_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+components:
+  schemas:
+    AssignTime:
+      type: object
+      properties:
+        period:
+          $ref: '#/components/schemas/PeriodEnum'
+        day:
+          $ref: '#/components/schemas/DayEnum'
+        assign:
+          $ref: '#/components/schemas/AssignTimetableInline'
+      required:
+      - assign
+      - day
+    AssignTimetableInline:
+      type: object
+      properties:
+        course:
+          type: string
+          readOnly: true
+        class_info:
+          type: string
+          readOnly: true
+        faculty:
+          type: string
+          readOnly: true
+      required:
+      - class_info
+      - course
+      - faculty
+    Attendance:
+      type: object
+      properties:
+        status:
+          type: boolean
+        date:
+          type: string
+          format: date
+          nullable: true
+        student:
+          type: string
+        attendanceclass:
+          type: integer
+        course:
+          type: string
+          nullable: true
+      required:
+      - attendanceclass
+      - student
+    AttendanceClass:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        date:
+          type: string
+          format: date
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+      required:
+      - date
+      - id
+    Class:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 5
+        degree:
+          $ref: '#/components/schemas/DegreeEnum'
+        branch:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        batch:
+          type: string
+          description: E.g 2021-25
+        sem:
+          type: integer
+          maximum: 8
+          minimum: 1
+        class_name:
+          type: string
+          readOnly: true
+      required:
+      - batch
+      - branch
+      - class_name
+      - degree
+      - id
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 10
+        name:
+          type: string
+          maxLength: 100
+        shortname:
+          type: string
+          maxLength: 10
+        credits:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - credits
+      - id
+      - name
+      - shortname
+    DayEnum:
+      enum:
+      - Monday
+      - Tuesday
+      - Wednesday
+      - Thursday
+      - Friday
+      - Saturday
+      type: string
+      description: |-
+        * `Monday` - Monday
+        * `Tuesday` - Tuesday
+        * `Wednesday` - Wednesday
+        * `Thursday` - Thursday
+        * `Friday` - Friday
+        * `Saturday` - Saturday
+    DegreeEnum:
+      enum:
+      - Bachelor of Technology
+      - Master of Technology
+      - Doctor of Philosophy
+      type: string
+      description: |-
+        * `Bachelor of Technology` - Bachelor of Technology
+        * `Master of Technology` - Master of Technology
+        * `Doctor of Philosophy` - Doctor of Philosophy
+    Dept:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 10
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    Faculty:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 100
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        DOB:
+          type: string
+          format: date
+        phone_number:
+          type: string
+          nullable: true
+          description: Include Country Code (+91)
+          maxLength: 13
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        dept:
+          type: string
+      required:
+      - id
+      - name
+    FacultyAssign:
+      type: object
+      properties:
+        name:
+          type: string
+          readOnly: true
+        faculty:
+          type: string
+        class_info:
+          $ref: '#/components/schemas/Class'
+        course:
+          $ref: '#/components/schemas/Course'
+      required:
+      - class_info
+      - course
+      - faculty
+      - name
+    MarkClass:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        test_name:
+          $ref: '#/components/schemas/TestNameEnum'
+        status:
+          type: boolean
+      required:
+      - id
+      - test_name
+    Marks:
+      type: object
+      properties:
+        mark:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        student:
+          type: string
+        mark_class:
+          type: integer
+      required:
+      - mark_class
+      - student
+    MarksInline:
+      type: object
+      properties:
+        test_name:
+          type: string
+          readOnly: true
+        mark:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - test_name
+    PatchedAttendanceClass:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        date:
+          type: string
+          format: date
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+    PeriodEnum:
+      enum:
+      - 09:00 - 10:00
+      - 10:00 - 11:00
+      - 11:00 - 12:00
+      - 12:00 - 13:00
+      - 14:00 - 15:00
+      - 15:00 - 16:00
+      - 16:00 - 17:00
+      type: string
+      description: |-
+        * `09:00 - 10:00` - 09:00 - 10:00
+        * `10:00 - 11:00` - 10:00 - 11:00
+        * `11:00 - 12:00` - 11:00 - 12:00
+        * `12:00 - 13:00` - 12:00 - 13:00
+        * `14:00 - 15:00` - 14:00 - 15:00
+        * `15:00 - 16:00` - 15:00 - 16:00
+        * `16:00 - 17:00` - 16:00 - 17:00
+    SexEnum:
+      enum:
+      - Male
+      - Female
+      type: string
+      description: |-
+        * `Male` - Male
+        * `Female` - Female
+    StatusEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      type: integer
+      description: |-
+        * `0` - Attendance not Marked
+        * `1` - Attendance Marked
+        * `2` - Class cancelled
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 15
+        name:
+          type: string
+          maxLength: 200
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        DOB:
+          type: string
+          format: date
+        phone_number:
+          type: string
+          description: Include Country Code (+91)
+          maxLength: 13
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        class_id:
+          type: string
+          title: Class
+      required:
+      - class_id
+      - id
+      - name
+      - phone_number
+    StudentAttendanceSubmit:
+      type: object
+      properties:
+        attd_class:
+          type: integer
+        absent_students:
+          type: array
+          items:
+            type: string
+      required:
+      - absent_students
+      - attd_class
+    StudentAttendanceView:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        attd_class:
+          type: string
+          readOnly: true
+        total_class:
+          type: string
+          readOnly: true
+        classes_to_attend:
+          type: string
+          readOnly: true
+      required:
+      - attd_class
+      - classes_to_attend
+      - course
+      - total_class
+    StudentMarkSubmit:
+      type: object
+      properties:
+        mark_class:
+          type: integer
+        students_mark:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+      - mark_class
+      - students_mark
+    StudentMarkView:
+      type: object
+      properties:
+        course:
+          $ref: '#/components/schemas/Course'
+        marks:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarksInline'
+      required:
+      - course
+      - marks
+    TestNameEnum:
+      enum:
+      - Quiz
+      - Faculty Assessment
+      - Mid Semester Exam
+      - End Semester Exam
+      type: string
+      description: |-
+        * `Quiz` - Quiz
+        * `Faculty Assessment` - Faculty Assessment
+        * `Mid Semester Exam` - Mid Semester Exam
+        * `End Semester Exam` - End Semester Exam
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        date_joined:
+          type: string
+          format: date-time
+        other_info:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+      required:
+      - id
+      - other_info
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

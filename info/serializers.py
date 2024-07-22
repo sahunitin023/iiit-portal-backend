@@ -1,5 +1,5 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field, OpenApiTypes
 
 from .models import *
 
@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
             "other_info",
         ]
 
+    @extend_schema_field(OpenApiTypes.OBJECT)
     def get_other_info(self, obj: User):
         if obj.is_faculty:
             faculty = Faculty.objects.get(user=obj)
@@ -50,7 +51,8 @@ class ClassSerializer(serializers.ModelSerializer):
         model = Class
         fields = ["id", "degree", "branch", "batch", "sem", "class_name"]
         read_only_fields = ("class_name",)
-
+        
+    @extend_schema_field(serializers.CharField)
     def get_class_name(self, obj):
         return str(obj)
 
@@ -93,7 +95,7 @@ class FacultyAssignSerializer(serializers.ModelSerializer):
     class_info = ClassSerializer(source="class_id")
     # faculty = FacultySerializer()
     name = serializers.SerializerMethodField()
-    assigntimes = serializers.SerializerMethodField()
+    # assigntimes = serializers.SerializerMethodField()
 
     class Meta:
         model = Assign
@@ -105,6 +107,7 @@ class FacultyAssignSerializer(serializers.ModelSerializer):
             # "assigntimes",
         ]
 
+    @extend_schema_field(serializers.CharField)
     def get_name(self, obj):
         return str(obj)
 
@@ -124,13 +127,16 @@ class AssignTimetableInlineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Assign
         fields = ["course", "class_info", "faculty"]
-
+        
+    @extend_schema_field(serializers.CharField)
     def get_course(self, obj: Assign):
         return obj.course.name
 
+    @extend_schema_field(serializers.CharField)
     def get_faculty(self, obj: Assign):
         return obj.faculty.name
 
+    @extend_schema_field(serializers.CharField)
     def get_class_info(self, obj: Assign):
         return f"{obj.class_id.branch.short_name} {obj.class_id.batch}"
 
@@ -157,11 +163,25 @@ class StudentAttendanceSubmitSerializer(serializers.Serializer):
 
 class StudentAttendanceViewSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
-
+    attd_class = serializers.SerializerMethodField()
+    total_class = serializers.SerializerMethodField()
+    classes_to_attend = serializers.SerializerMethodField()
+    
     class Meta:
         model = StudentCourse
         fields = ["course", "attd_class", "total_class", "classes_to_attend"]
 
+    @extend_schema_field(serializers.CharField)
+    def get_total_class(self, obj):
+        return obj.total_class
+
+    @extend_schema_field(serializers.CharField)
+    def get_attd_class(self, obj):
+        return obj.attd_class
+
+    @extend_schema_field(serializers.CharField)
+    def get_classes_to_attend(self, obj):
+        return obj.classes_to_attend
 
 class MarksInlineSerializer(serializers.ModelSerializer):
     test_name = serializers.SerializerMethodField()
@@ -170,6 +190,7 @@ class MarksInlineSerializer(serializers.ModelSerializer):
         model = Marks
         fields = ["test_name", "mark"]
 
+    @extend_schema_field(serializers.CharField)
     def get_test_name(self, obj: Marks):
         return obj.mark_class.test_name
 

@@ -4,16 +4,17 @@ from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 from django.forms import ValidationError
 from django.db.models.signals import post_save
 from backend import permissions
 from info.serializers import *
 from .models import *
 
-
-class CustomTokenVerificationView(APIView):
+@extend_schema(tags=['Auth'])
+class CustomTokenVerificationView(generics.GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = TokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = TokenObtainPairSerializer(data=request.data)
@@ -55,6 +56,7 @@ class CustomTokenVerificationView(APIView):
 # ______________ADMIN VIEWS______________________
 
 
+@extend_schema(tags=["Admin"])
 class FacultyListCreateView(generics.ListCreateAPIView):
     queryset = Faculty.objects.all()
     serializer_class = FacultySerializer
@@ -84,6 +86,7 @@ class FacultyListCreateView(generics.ListCreateAPIView):
         serializer.save(user=user)
 
 
+@extend_schema(tags=["Admin"])
 class StudentListCreateAPIView(generics.ListCreateAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
@@ -113,12 +116,14 @@ class StudentListCreateAPIView(generics.ListCreateAPIView):
         serializer.save(user=user)
 
 
+@extend_schema(tags=["Admin"])
 class DeptListCreateView(generics.ListCreateAPIView):
     queryset = Dept.objects.all()
     serializer_class = DeptSerializer
     permission_classes = [permissions.IsAdminOrStaff]
 
 
+@extend_schema(tags=["Admin"])
 class ClassListCreateView(generics.ListCreateAPIView):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
@@ -129,6 +134,7 @@ class ClassListCreateView(generics.ListCreateAPIView):
 
 
 # List of Classes
+@extend_schema(tags=["Faculty"])
 class FacultyAssignListView(generics.ListAPIView):
     queryset = Assign.objects.all()
     serializer_class = FacultyAssignSerializer
@@ -147,6 +153,7 @@ class FacultyAssignListView(generics.ListAPIView):
 
 
 # List Class's Course Attendance
+@extend_schema(tags=["Faculty"])
 class FacultyAttendanceClassListView(generics.ListAPIView):
     queryset = AttendanceClass.objects.all()
     serializer_class = AttendanceClassSerializer
@@ -170,6 +177,7 @@ class FacultyAttendanceClassListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
+@extend_schema(tags=["Faculty"])
 class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
     serializer_class = StudentAttendanceSubmitSerializer
     permission_classes = [permissions.IsFaculty]
@@ -231,10 +239,12 @@ class FacultyStudentAttendanceCreateView(generics.CreateAPIView):
         return validated_data
 
 
+@extend_schema(tags=["Faculty"])
 class FacultyClassCancelUpdateView(generics.UpdateAPIView):
     queryset = AttendanceClass.objects.all()
     lookup_field = "attendance_class_id"
     permission_classes = [permissions.IsFaculty]
+    serializer_class = AttendanceClassSerializer
 
     def get_attendance_class_id(self, request, attendance_class_id, *args, **kwargs):
         return attendance_class_id
@@ -249,18 +259,23 @@ class FacultyClassCancelUpdateView(generics.UpdateAPIView):
             )
         attd_class.status = 2
         attd_class.save()
-        return Response({"message": "Class Cancelled"}, status=status.HTTP_202_ACCEPTED)
+        data = AttendanceClassSerializer(attd_class, many=False).data
+        return Response(data=data, status=status.HTTP_202_ACCEPTED)
 
 
+@extend_schema(tags=["Faculty"])
 class FacultyClassAttendanceListView(generics.ListAPIView):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
     permission_classes = [permissions.IsFaculty]
-    
+
     def list(self, request, attendanceclass_id=None, *args, **kwargs):
-        
+
         if not attendanceclass_id:
-            return Response(data={"message": "Attendance Class ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"message": "Attendance Class ID not provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         queryset = self.get_queryset().filter(attendanceclass_id=attendanceclass_id)
 
@@ -270,6 +285,7 @@ class FacultyClassAttendanceListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
+@extend_schema(tags=["Faculty"])
 class FacultyTimetableListView(generics.ListAPIView):
     queryset = AssignTime.objects.all()
     serializer_class = AssignTimeSerializer
@@ -288,6 +304,7 @@ class FacultyTimetableListView(generics.ListAPIView):
 
 
 # List Class's Course Mark
+@extend_schema(tags=["Faculty"])
 class FacultyMarkClassListView(generics.ListAPIView):
     queryset = MarkClass.objects.all()
     serializer_class = MarkClassSerializer
@@ -311,6 +328,7 @@ class FacultyMarkClassListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
+@extend_schema(tags=["Faculty"])
 class FacultyStudentMarkCreateView(generics.CreateAPIView):
     serializer_class = StudentMarkSubmitSerializer
     permission_classes = [permissions.IsFaculty]
@@ -371,15 +389,19 @@ class FacultyStudentMarkCreateView(generics.CreateAPIView):
         return validated_data
 
 
+@extend_schema(tags=["Faculty"])
 class FacultyStudentMarkListView(generics.ListAPIView):
     queryset = Marks.objects.all()
     serializer_class = MarksSerializer
     permission_classes = [permissions.IsFaculty]
-    
+
     def list(self, request, mark_class_id=None, *args, **kwargs):
-        
+
         if not mark_class_id:
-            return Response(data={"message": "Mark Class ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"message": "Mark Class ID not provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         queryset = self.get_queryset().filter(mark_class_id=mark_class_id)
 
@@ -388,9 +410,10 @@ class FacultyStudentMarkListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
 # _________________STUDENT VIEWS______________________
 
-
+@extend_schema(tags=['Student'])
 class StudentAttendanceListView(generics.ListAPIView):
 
     queryset = StudentCourse.objects.all()
@@ -402,7 +425,7 @@ class StudentAttendanceListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
+@extend_schema(tags=['Student'])
 class StudentClassTimetableListView(generics.ListAPIView):
     queryset = AssignTime.objects.all()
     serializer_class = AssignTimeSerializer
@@ -419,7 +442,7 @@ class StudentClassTimetableListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
+@extend_schema(tags=['Student'])
 class StudentMarkListView(generics.ListAPIView):
 
     queryset = StudentCourse.objects.all()
@@ -434,7 +457,7 @@ class StudentMarkListView(generics.ListAPIView):
 
 # ____________________OTHERS__________________________________
 
-
+@extend_schema(tags=['Faculty', 'Other'])
 class ClassStudentListView(generics.ListAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
@@ -449,11 +472,10 @@ class ClassStudentListView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
+@extend_schema(tags=['Other'])
 class ProfileRetrieveView(generics.RetrieveAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "id"
     permission_classes = [IsAuthenticated]
-    

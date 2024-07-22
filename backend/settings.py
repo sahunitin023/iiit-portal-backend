@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
     # apps
     'info.apps.InfoConfig',
 ]
@@ -134,6 +135,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
@@ -145,4 +147,18 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1), # minutes=5
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1), # days=1
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'IIIT Portal API',
+    'DESCRIPTION': 'Academic Management System',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'TAGS': [
+        {'name': 'Auth', 'description': 'Token Authentication'},
+        {'name': 'Admin', 'description': 'Admin APIs'},
+        {'name': 'Faculty', 'description': 'Faculty APIs'},
+        {'name': 'Student', 'description': 'Student APIs'},
+        {'name': 'Other', 'description': 'Other APIs'},
+    ],
 }
