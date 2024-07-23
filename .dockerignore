@@ -1,6 +1,4 @@
-.env
-.venv/
+./venv
 info.txt
 activate_venv.ps1
-start.sh
 git.ps1

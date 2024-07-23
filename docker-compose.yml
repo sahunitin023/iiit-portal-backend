@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  web:
+    image: iiit-portal-image
+    container_name: iiit-portal-container
+    build: 
+      context: .
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    # command: ["sh", "./start.sh"]
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/iiit-portal
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    # ports:
+    #   - "5432:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
