@@ -1,4 +1,5 @@
 from datetime import timedelta
+from email.policy import default
 from pathlib import Path
 from decouple import config
 
@@ -8,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG"),
+DEBUG = config("DEBUG", default=False, cast=bool),
 
 ALLOWED_HOSTS = ["*"]
 
@@ -65,7 +66,7 @@ DATABASES = {
         "NAME": config("POSTGRES_DB"),
         "USER": config("POSTGRES_USER"),
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": "db",
+        "HOST": config("POSTGRES_HOST"),
         "PORT": "5432",
     }
 }

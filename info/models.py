@@ -2,15 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .constants import (
-    ATTENDANCE_STATUS_CHOICES,
-    degree_choices,
-    sex_choice,
-    time_slots,
-    DAYS_OF_WEEK,
-    test_name,
-    test_total_mark,
-)
+from .constants import *
 
 
 # Create your models here.
@@ -195,7 +187,6 @@ class Attendance(models.Model):
         return f"{self.student.name} : {self.course.shortname}"
 
 
-
 class AttendanceRange(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
@@ -215,7 +206,7 @@ class MarkClass(models.Model):
 
     class Meta:
         unique_together = (("assign", "test_name"),)
-        
+
     def __str__(self):
         return f"{self.assign.class_id} : {self.assign.course} : {self.test_name}"
 
@@ -288,7 +279,7 @@ class StudentCourse(models.Model):
         if cta < 0:
             return 0
         return cta
-    
+
     @property
     def course_marks(self):
         return Marks.objects.filter(
